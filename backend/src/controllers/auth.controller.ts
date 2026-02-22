@@ -2,19 +2,19 @@ import { Request, Response } from "express";
 import { db } from "../config/firebase.js";
 import { messaging } from "firebase-admin";
 
-export const registerUser = async (req:Request, res: Response) => {
+export const registerUser = async (req: Request, res: Response) => {
   try {
-    const {uid, email, name, role} = (req as any).body
+    const { uid, email, name, role } = req.body
 
-    if(!email || !name || !role){
-      return res.status(400).json({message: "All fields are required"})
+    if (!uid || !email || !name || !role) {
+      return res.status(400).json({ message: "All fields are required" })
     }
 
     const userRef = db.collection("users").doc(uid)
     const userDoc = await userRef.get()
 
-    if(userDoc.exists){
-      return res.status(400).json({message: "User already exists"})
+    if (userDoc.exists) {
+      return res.status(400).json({ message: "User already exists" })
     }
 
     await userRef.set({
@@ -24,12 +24,12 @@ export const registerUser = async (req:Request, res: Response) => {
       createdAt: new Date(),
     })
 
-    res.status(201).json({message: "User registered successfully"}  )
+    res.status(201).json({ message: "User registered successfully" })
   } catch (error) {
     console.log("Registration Error:", error);
     res.status(500).json({ message: "Error registering user" });
   }
-} 
+}
 
 export const getUserProfile = async (req: Request, res: Response) => {
   try {
