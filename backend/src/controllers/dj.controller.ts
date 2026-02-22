@@ -18,17 +18,86 @@ export const createDJ = async(req: Request, res: Response) => {
 
 export const getAllDJs = async(req: Request, res: Response) => {
     try {
-        const snapshot = await db.collection("djs").get();
+        let query:any = db.collection("djs")
 
-        const djs = snapshot.docs.map(doc => ({
+        const {loaction, minPrice, maxPrice} = req.query
+
+        if(loaction){
+            query = query.where("location", "==", loaction)
+        }
+        if(minPrice){
+            query = query.where("priceStarting", ">=", Number(minPrice))
+        }
+        if(maxPrice){
+            query = query.where("priceStarting", "<=", Number(maxPrice))
+        }
+
+        const snapshot = await query.get()
+        const djs = snapshot.docs.map((doc:any) => ({
             id: doc.id,
-            ...doc.data()
+            ...doc.data(),
         }))
-
+        if(!djs){
+            return res.status(404).json({message: "No DJs found"})
+        }   
         res.status(200).json(djs)
-    } catch (error) {
+
+     } catch (error) {
         console.log("Error fetching DJs:", error);
         res.status(500).json({ message: "Error fetching DJs" });
     }
 }
 
+export const getDJAnalytics = async(req: Request, res: Response) => {
+    try {
+        const uid = req.user?.uid
+
+        if(!uid){
+            return res.status(401).json({message: "Unauthorized"})
+        }
+
+        const snapshot = await db.collection("bookings").where("djId", "==", uid).get()
+
+        if(snapshot.empty){
+            return res.status(200).json({
+                totalBookings: 0,
+                completedBookings: 0,
+                cancelledBookings: 0,
+                totalRevenue: 0,
+                pendingBookings: 0,
+            })
+        }
+        let pendingBookings = 0
+        let cancelledBookings = 0
+        let totalBookings = 0
+        let completedBookings = 0
+        let totalRevenue = 0
+
+        snapshot.forEach((doc) => {
+            const booking = doc.data();
+            totalBookings++
+
+            if(booking.status === "pending"){
+                pendingBookings++
+            }
+            if(booking.status === "cancelled"){
+                cancelledBookings++
+            }
+            if(booking.status === "completed"){
+                completedBookings++
+                totalRevenue += booking.price || 0
+            }
+        })
+
+        res.status(200).json({
+            totalBookings,
+            completedBookings,
+            cancelledBookings,
+            totalRevenue,
+            pendingBookings,    
+        })
+    } catch (error) {
+        console.log("Error fetching DJ analytics:", error);
+        res.status(500).json({ message: "Error fetching DJ analytics" });
+    }
+}
