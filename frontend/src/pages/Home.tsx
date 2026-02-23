@@ -1,10 +1,25 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
+import { motion } from 'framer-motion';
+import Navbar from '../components/Navbar';
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8 } }
+};
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.2,
+      delayChildren: 0.3
+    }
+  }
+};
 
 const Home: React.FC = () => {
-  const { user, logout } = useAuth();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <>
@@ -16,79 +31,7 @@ const Home: React.FC = () => {
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen w-full">
-        <header className="fixed top-0 w-full z-50 flex items-center justify-between border-b border-white/10 bg-background-dark/80 backdrop-blur-md px-6 lg:pl-20 lg:pr-10 py-5">
-          <div className="flex items-center gap-3">
-            <div className="size-6 bg-white rounded-full animate-pulse"></div>
-            <h2 className="text-white text-lg font-display font-bold uppercase tracking-widest">DJ Night</h2>
-          </div>
-
-          <div className="hidden md:flex flex-1 items-center justify-center">
-            <nav className="flex gap-12">
-              <Link to="/about" className="text-gray-400 hover:text-white transition-colors text-xs font-display uppercase tracking-widest relative group">
-                About
-                <span className="absolute -bottom-1 left-0 w-0 h-px bg-white transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-              <Link to="/how-it-works" className="text-gray-400 hover:text-white transition-colors text-xs font-display uppercase tracking-widest relative group">
-                How it Works
-                <span className="absolute -bottom-1 left-0 w-0 h-px bg-white transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-              <Link to="/contact" className="text-gray-400 hover:text-white transition-colors text-xs font-display uppercase tracking-widest relative group">
-                Contact Us
-                <span className="absolute -bottom-1 left-0 w-0 h-px bg-white transition-all duration-300 group-hover:w-full"></span>
-              </Link>
-            </nav>
-          </div>
-
-          <div className="hidden md:flex items-center gap-4">
-            {user ? (
-              <div className="flex items-center gap-4">
-                <span className="text-white text-xs font-display uppercase tracking-widest">{user.name}</span>
-                <button onClick={logout} className="border border-white/30 hover:bg-white hover:text-black hover:border-white transition-all duration-300 px-6 py-2 text-xs font-bold uppercase tracking-widest hover-butter">
-                  Log Out
-                </button>
-                <Link to={`/dashboard/${user.role || 'user'}`} className="bg-white text-black border border-white hover:bg-transparent hover:text-white transition-all duration-300 px-6 py-2 text-xs font-bold uppercase tracking-widest hover-butter">
-                  Dashboard
-                </Link>
-              </div>
-            ) : (
-              <Link to="/login" className="border border-white/30 hover:bg-white hover:text-black hover:border-white transition-all duration-300 px-6 py-2 text-xs font-bold uppercase tracking-widest hover-butter">
-                Log In
-              </Link>
-            )}
-          </div>
-
-          <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="md:hidden text-white z-50">
-            <span className="material-symbols-outlined">{isMobileMenuOpen ? 'close' : 'menu'}</span>
-          </button>
-        </header>
-
-        {/* Mobile Menu */}
-        <div className={`fixed inset-0 bg-black/95 backdrop-blur-xl z-40 transition-transform duration-500 flex flex-col items-center justify-center gap-8 ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'} md:hidden`}>
-          <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-3xl font-display uppercase tracking-widest text-white hover:text-gray-400">About</Link>
-          <Link to="/how-it-works" onClick={() => setIsMobileMenuOpen(false)} className="text-3xl font-display uppercase tracking-widest text-white hover:text-gray-400">How it Works</Link>
-          <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)} className="text-3xl font-display uppercase tracking-widest text-white hover:text-gray-400">Contact Us</Link>
-
-          {user ? (
-            <div className="flex flex-col items-center gap-6 mt-8">
-              <span className="text-gray-400 font-mono text-sm uppercase tracking-widest border-b border-white/20 pb-2">Logged in as {user.name}</span>
-              <Link to={`/dashboard/${user.role || 'user'}`} onClick={() => setIsMobileMenuOpen(false)} className="bg-white text-black px-12 py-4 text-sm font-bold uppercase tracking-widest w-full text-center">
-                Dashboard
-              </Link>
-              <button onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="border border-white/30 text-white px-12 py-4 text-sm font-bold uppercase tracking-widest w-full text-center hover:bg-white/10">
-                Log Out
-              </button>
-            </div>
-          ) : (
-            <div className="flex flex-col gap-4 mt-8 w-64">
-              <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="border border-white/30 text-white hover:bg-white hover:text-black transition-all duration-300 px-6 py-4 text-sm text-center font-bold uppercase tracking-widest w-full">
-                Log In
-              </Link>
-              <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)} className="bg-white text-black hover:bg-gray-200 transition-all duration-300 px-6 py-4 text-sm text-center font-bold uppercase tracking-widest w-full">
-                Sign Up
-              </Link>
-            </div>
-          )}
-        </div>
+        <Navbar isTransparent={true} />
 
         <main className="flex-grow pl-0 lg:pl-20">
           <section className="relative h-screen w-full flex items-center justify-center overflow-hidden border-b border-white/10">
@@ -96,18 +39,23 @@ const Home: React.FC = () => {
               <div className="absolute inset-0 bg-cover bg-center grayscale contrast-125 brightness-75 vinyl-spin scale-150" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuArPXG1tpqrMtX70DeVHYVINIG9GThEbyFnVffUddO5NmpKlfn6_sS0m2blKoe15Rdgyypc-MnOSt1t-U2JZ-wjJgTdQ11DpEMcErKFcRJA96QiwSDhT5yeTwA2EYqhJBRmB3xFXvRl2jkbzwSGyeRmC0L8PrPdT8Dm-Lkq1zUk0zyASAK-ub38HYJTpVwNHemur55BOkPexFSTV1tX8oFdZqjjHkNLSVjXEI4cIoLsirnBEiNXAJtjVZ-ZV7sxcJso5ZSKXvZu5uA")' }}></div>
             </div>
 
-            <div className="relative z-10 flex flex-col items-center justify-center text-center px-4 w-full max-w-[90vw]">
-              <div className="mb-6 flex items-center gap-4 text-xs font-display uppercase tracking-[0.3em] text-white/70">
+            <motion.div
+              className="relative z-10 flex flex-col items-center justify-center text-center px-4 w-full max-w-[90vw]"
+              variants={containerVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              <motion.div variants={itemVariants} className="mb-6 flex items-center gap-4 text-xs font-display uppercase tracking-[0.3em] text-white/70">
                 <span className="block h-px w-12 bg-white/50"></span>
                 <span>Sonic Architecture</span>
                 <span className="block h-px w-12 bg-white/50"></span>
-              </div>
+              </motion.div>
 
-              <h1 className="text-8xl md:text-[10rem] lg:text-[12rem] font-display font-bold leading-[0.85] tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-transparent mix-blend-difference select-none">
+              <motion.h1 variants={itemVariants} className="text-8xl md:text-[10rem] lg:text-[12rem] font-display font-bold leading-[0.85] tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-transparent mix-blend-difference select-none">
                 SOUND<br />SYSTEM
-              </h1>
+              </motion.h1>
 
-              <div className="mt-12 flex flex-col md:flex-row gap-6 w-full max-w-md md:max-w-2xl justify-between items-end">
+              <motion.div variants={itemVariants} className="mt-12 flex flex-col md:flex-row gap-6 w-full max-w-md md:max-w-2xl justify-between items-end">
                 <p className="text-left text-sm md:text-base text-gray-400 max-w-xs font-mono">
                   [001] Curating high-fidelity experiences.<br />
                   [002] Connecting venues with sonic artists.
@@ -120,8 +68,8 @@ const Home: React.FC = () => {
                     <span className="relative z-10 font-display font-bold uppercase tracking-widest text-xs">Join Roster</span>
                   </Link>
                 </div>
-              </div>
-            </div>
+              </motion.div>
+            </motion.div>
 
             <div className="absolute bottom-8 left-8 right-8 flex justify-between items-end pointer-events-none">
               <span className="font-mono text-xs text-white/50">SCROLL TO EXPLORE</span>
