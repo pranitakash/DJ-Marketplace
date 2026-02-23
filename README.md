@@ -1,121 +1,109 @@
-# 🎧 DJ Night - Premium Real-Time Booking Ecosystem
+# 🎧 DJ Night: Premium Real-Time Booking Ecosystem
+
+**Orchestrating World-Class Talent with Surgical Precision.**
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
+[![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
-[![Express](https://img.shields.io/badge/Express.js-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
 [![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
-[![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=for-the-badge&logo=socket.io&logoColor=white)](https://socket.io/)
 
-**Elevate your events with surgical precision.** DJ Night is a high-performance, real-time booking orchestration platform designed to bridge the gap between world-class talent and premium event organizers. Built with a focus on low-latency synchronization, multi-layered security, and enterprise scalability.
+DJ Night is a high-performance, full-stack orchestration platform designed for premium event booking. It bridges the gap between elite musical talent and high-end event organizers using a low-latency, event-driven architecture and a state-of-the-art user interface.
 
 ---
 
-## 🏗️ System Architecture
+## 🏛️ Ecosystem Architecture
 
-The platform leverages an asynchronous, event-driven architecture to ensure seamless real-time interactions between Users and DJs.
+The platform follows a **decoupled, event-driven architecture** ensures seamless synchronization and enterprise-grade scalability.
 
 ```mermaid
 graph TD
-    User((User/Organizer)) <-->|Socket.io| Backend[Express.js Node API]
-    DJ((DJ/Talent)) <-->|Socket.io| Backend
-    Backend <-->|Admin SDK| Firestore[(Firebase Cloud Firestore)]
-    Backend <-->|Identity Platform| Auth(Firebase Authentication)
+    Client[Premium React Frontend] <-->|WebSockets| API[Orchestration Layer / Express.js]
+    API <-->|Firebase Identity| Auth[Identity Provider]
+    API <-->|Admin SDK| DB[(Cloud Firestore)]
     
-    subgraph Security Layer
-        RateLimiter[express-rate-limit]
-        CORS[CORS Middleware]
-        RBAC[Role-Based Access Control]
+    subgraph Security Citadel
+        RateLimit[Volumetric Protection]
+        RBAC[Cryptographic Access Control]
+        CORS[Origin Validation]
     end
     
-    Backend --- SecurityLayer
+    API --- SecurityCitadel
 ```
 
 ---
 
-## 🔥 Core Capabilities
+## ✨ Frontend Brilliance: Modern Glassmorphic UI
 
-### ⚡ Real-Time Booking Orchestration
-*   **Instant Notifications**: Powered by WebSockets (Socket.io) for immediate booking requests and status updates.
-*   **State Synchronization**: Bi-directional data flow ensuring both parties see the same status in real-time.
-*   **Lifecycle Management**: Comprehensive state machine for bookings (Pending → Confirmed → Completed → Cancelled).
+The frontend is a **state-of-the-art Single Page Application (SPA)** built for visual excellence and interactive fluidness.
 
-### 🛡️ Enterprise-Grade Security Implementation
-*   **Multi-Layered Rate Limiting**: 
-    *   *Global Layer*: Protects the entire API from volumetric attacks.
-    *   *Authentication Guard*: Aggressive limits on sensitive endpoints to mitigate brute-force vectors.
-*   **Firebase Identity Integration**: JWT-based verification using the Firebase Admin SDK.
-*   **Granular RBAC**: Strict Role-Based Access Control enforcing permission sets for `Users`, `DJs`, and `Admins`.
-
-### 📊 Advanced Discovery Engine
-*   **Dynamic Filtering**: Efficient queries against Firestore for location, pricing, and performance ratings.
-*   **Analytics Pipeline**: Real-time tracking of booking conversion and revenue metrics for DJs.
+- **🎨 Rich Aesthetics**: Implements a curated dark-mode design system with **vibrant gradients**, **glassmorphism**, and **smooth micro-animations**.
+- **🎫 Dynamic Onboarding**: A premium signup experience featuring interactive **Role Assignment** tiles (Music Lover vs. DJ Professional).
+- **🔄 Session Resilience**: Global authentication state managed via **React Context API**, ensuring persistent sessions and protected route integrity.
+- **⚡ Performance First**: Built on **Vite** for sub-second hot module replacement and optimized production builds.
 
 ---
 
-## 🛠️ Technical Stack
+## ⚙️ Backend Excellence: High-Performance Engine
 
-- **Runtime**: [Node.js](https://nodejs.org/) (ESM environment)
-- **Language**: [TypeScript](https://www.typescriptlang.org/) (Strict type-safety)
-- **Framework**: [Express.js](https://expressjs.com/)
-- **Infrastructure**: [Google Firebase](https://firebase.google.com/) (Firestore, Auth, Admin SDK)
-- **Sockets**: [Socket.io](https://socket.io/) (Real-time events)
-- **Middleware**: `express-rate-limit`, `cors`, `dotenv`
+The backend is a **robust, type-safe API engine** designed for reliability and cryptographic security.
+
+- **📡 Real-Time Orchestration**: Leverages **WebSockets (Socket.io)** for instantaneous booking state transitions and bidirectional data flow.
+- **🛡️ Multi-Layered Security**:
+    - **Identity Toolkit Integration**: Direct integration with Firebase Identity for secure, password-less and credential-based authentication.
+    - **RBAC Citadel**: Strict Role-Based Access Control enforcing granular permissions (User, DJ, Admin).
+    - **Volumetric Limiting**: Intelligent rate limiting categorized by global traffic and sensitive authentication vectors.
+- **📊 Business Intelligence**: Integrated **Analytics Pipeline** providing DJs with real-time revenue metrics and booking conversion insights.
+- **💡 Standardized Communication**: Employs a **Unified Response Utility** for consistent, predictable API behavior across all endpoints.
 
 ---
 
-## 🚀 Deployment & Setup
+## 🛠️ Technology Stack
 
-### 1. Repository Initialization
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend** | React 19, TypeScript, Vite, React Router, Axios, Lucide Icons |
+| **Backend** | Node.js (ESM), Express.js, Firebase Admin SDK, Socket.io |
+| **Database** | Google Cloud Firestore (NoSQL) |
+| **Security** | JWT, Express-Rate-Limit, CORS, Firebase Auth |
+
+---
+
+## 🚀 Rapid Deployment
+
+### 1. Build & Setup
 ```bash
 git clone https://github.com/NITESH-DANGI/DJ-night.git
-cd DJ-night/backend
-npm install
+cd DJ-night
+# Install ecosystem dependencies
+(cd backend && npm install)
+(cd frontend && npm install)
 ```
 
-### 2. Environment Configuration
-Create a `.env` file in the `backend/` directory:
+### 2. Environment Tuning
+Configure the `.env` in the `backend/` directory:
 ```env
 PORT=5000
-# Production specific environment configurations
+FIREBASE_API_KEY=your_web_api_key
 ```
-> [!IMPORTANT]
-> Ensure your `serviceAccountKey.json` is located in the `backend/` root for Firebase Admin connectivity.
 
 ### 3. Execution Engines
-*   **Development**: Hot-reloading with TypeScript watch mode.
-    ```bash
-    npm run dev
-    ```
-*   **Production**: Compile to optimized JavaScript and execute.
-    ```bash
-    npm run build
-    npm start
-    ```
+- **Backend Hub**: `npm run dev` (from /backend)
+- **Frontend SPA**: `npm run dev` (from /frontend)
 
 ---
 
 ## 📡 API Technical Reference
 
-| Endpoint | Method | Security | Description |
-| :--- | :--- | :---: | :--- |
-| `/api/auth/register` | `POST` | `AuthLimiter` | Identity creation & onboarding |
-| `/api/auth/login` | `POST` | `AuthLimiter` | Session establishment |
-| `/api/djs` | `GET` | `Public` | Discover and filter DJ pool |
-| `/api/bookings` | `POST` | `JWT Required` | Initialize booking transaction |
-| `/api/admin/*` | `ALL` | `Admin RBAC` | System-level administration |
+| Domain | Protocol | Endpoint | Description |
+| :--- | :---: | :--- | :--- |
+| **Identity** | REST | `/api/auth/*` | Cryptographic onboarding and login |
+| **Talent** | REST | `/api/djs/*` | Discover and filter the global DJ pool |
+| **Transactions** | REST/WS | `/api/bookings/*` | Asynchronous booking lifecycle management |
+| **Intelligence** | REST | `/api/admin/*` | System orchestration and analytics |
 
 ---
 
-## 🛡️ Security Posture
+## 📜 Professional Standard
 
-This implementation follows the **Least Privilege Principle**. Every request is scrutinized by:
-1.  **Rate Limiters**: Preventing DoS and resource exhaustion.
-2.  **CORS Policies**: Strict origin validation.
-3.  **Firebase Security Rules**: (Infrastructure level) Deep-packet data validation.
-4.  **JWT Middleware**: Verifying identity and role integrity.
-
----
-
-## 📜 License
-
-Distributed under the **ISC License**. Designed with a focus on performance and reliability for the global music community.
+Distributed under the **ISC License**. Designed for the global music community with a focus on **Visual Design, Real-Time Performance, and Security.**

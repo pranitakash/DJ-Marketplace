@@ -5,14 +5,22 @@ import { Timestamp } from "firebase-admin/firestore";
 export const createBooking = async (req: Request, res: Response) => {
   try {
     const booking = req.body;
-    
-    if (!booking) {
-      return res.status(400).json({ message: "Booking is required" })
+
+    if (!booking || !booking.djId || !booking.userId) {
+      return res.status(400).json({ message: "Booking details (djId, userId) are required" })
     }
+
+    // Verify DJ exists
+    const djDoc = await db.collection("djs").doc(booking.djId).get();
+    if (!djDoc.exists) {
+      return res.status(404).json({ message: "DJ not found" });
+    }
+
     const io = getIO();
 
     const docRef = await db.collection("bookings").add({
       ...booking,
+      eventLocation: booking.eventLocation || booking.eventLoaction, // Fallback for transition
       status: "pending",
       isVerified: false,
       createdAt: Timestamp.now(),
@@ -33,6 +41,7 @@ export const createBooking = async (req: Request, res: Response) => {
       message: "Booking created successfully",
     });
   } catch (error) {
+    console.error("Error creating booking:", error);
     res.status(500).json({ message: "Error creating booking" });
   }
 };

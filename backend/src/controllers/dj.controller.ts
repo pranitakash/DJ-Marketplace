@@ -18,7 +18,13 @@ export const createDJ = async (req: Request, res: Response) => {
 
 export const getAllDJs = async (req: Request, res: Response) => {
     try {
-        const { location, minPrice, maxPrice, limit = 10, lastDocId } = req.query as any
+        const { location, minPrice, maxPrice, limit = 10, lastDocId } = req.query as {
+            location?: string;
+            minPrice?: string;
+            maxPrice?: string;
+            limit?: string;
+            lastDocId?: string;
+        }
 
         let query: any = db.collection("djs").orderBy("createdAt").limit(Number(limit))
 
@@ -26,10 +32,10 @@ export const getAllDJs = async (req: Request, res: Response) => {
             query = query.where("location", "==", location)
         }
         if (minPrice) {
-            query = query.where("priceStarting", ">=", Number(minPrice))
+            query = query.where("hourlyRate", ">=", Number(minPrice))
         }
         if (maxPrice) {
-            query = query.where("priceStarting", "<=", Number(maxPrice))
+            query = query.where("hourlyRate", "<=", Number(maxPrice))
         }
 
         if (lastDocId) {
@@ -48,7 +54,7 @@ export const getAllDJs = async (req: Request, res: Response) => {
         const lastVisible = snapshot.docs[snapshot.docs.length - 1];
 
         if (snapshot.empty) {
-            return res.status(404).json({ message: "No DJs found" })
+            return res.status(200).json({ data: [], nextCursor: null })
         }
 
         return res.status(200).json({ data: djs, nextCursor: lastVisible?.id || null })

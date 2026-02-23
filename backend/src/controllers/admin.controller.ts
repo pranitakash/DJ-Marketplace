@@ -27,7 +27,7 @@ export const getAdminStats = async (req: Request, res: Response) => {
         bookingsSnap.forEach(doc => {
             const data = doc.data()
             if (data.status === "completed") {
-                totalRevenue += data.totalAmount || 0
+                totalRevenue += data.totalAmount || data.price || 0
             }
         })
 
@@ -197,8 +197,9 @@ export const verifyBooking = async (req: Request, res: Response) => {
 
         await bookingDoc.ref.update({
             isVerified: true, verifiedAt: new Date(),
-            payoutReleased: true })
-        
+            payoutReleased: true
+        })
+
         io.to(`dj_${bookingData?.djId}`).emit("booking_verified", {
             bookingId,
             isVerified: true,

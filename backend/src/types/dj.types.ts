@@ -1,9 +1,9 @@
-export interface IDJ{
+export interface IDJ {
     userId: string;
     stageName: string;
-    loaction: string;
+    location: string;
     genres: string[];
-    priceStarting: number[];
+    hourlyRate: number;
     rating: number;
     bio: string;
     createdAt: FirebaseFirestore.Timestamp
