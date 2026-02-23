@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DJ Night - Artist Command Center</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@300;400;500;700&amp;family=Share+Tech+Mono&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#333", 
+                        "accent": "#ffffff",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#050505",
+                        "surface-dark": "#0a0a0a",
+                        "surface-border": "#222222",
+                        "text-main": "#ffffff",
+                        "text-muted": "#666666",
+                        "tech-red": "#ff3333",
+                        "tech-green": "#00ff41",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                        "mono": ["Share Tech Mono", "monospace"],
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, #1a1a1a 1px, transparent 1px), linear-gradient(to bottom, #1a1a1a 1px, transparent 1px)",
+                    },
+                    backgroundSize: {
+                        'grid-size': '40px 40px',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050505;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 0px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .grain-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.05;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        .glow-text {
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+        .tech-border-r {
+            position: relative;
+        }
+        .tech-border-r::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            width: 1px;
+            background: linear-gradient(to bottom, transparent, #333 10%, #333 90%, transparent);
+        }
+        .blueprint-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(50, 50, 50, 0.15) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(50, 50, 50, 0.15) 1px, transparent 1px);
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-text-main font-body antialiased min-h-screen flex flex-col overflow-x-hidden selection:bg-white selection:text-black">
+<div class="grain-overlay"></div>
+<div class="fixed inset-0 blueprint-grid pointer-events-none z-0"></div>
+<header class="fixed top-0 w-full z-50 flex items-center justify-between border-b border-surface-border bg-background-dark/95 backdrop-blur-sm px-6 h-16">
+<div class="flex items-center gap-4">
+<div class="size-3 bg-white animate-pulse"></div>
+<h2 class="text-white text-sm font-display font-bold uppercase tracking-widest">DJ Night <span class="text-text-muted mx-2">//</span> Command Center</h2>
+</div>
+<div class="flex items-center gap-8">
+<div class="hidden md:flex gap-1 text-[10px] font-mono text-text-muted uppercase tracking-widest">
+<span class="text-white">SYS_STATUS:</span> ONLINE
+                <span class="mx-2">|</span>
+<span class="text-white">LAT:</span> 52.5200
+                <span class="mx-2">|</span>
+<span class="text-white">LON:</span> 13.4050
+            </div>
+<div class="flex items-center gap-4">
+<button class="bg-white/5 hover:bg-white hover:text-black border border-surface-border hover:border-white transition-all duration-200 px-4 py-1.5 text-[10px] font-mono uppercase tracking-widest">
+                    Log Out
+                </button>
+<div class="size-8 rounded-full bg-white/10 overflow-hidden border border-white/20">
+<img alt="Profile" class="w-full h-full object-cover grayscale opacity-80 hover:opacity-100 transition-opacity" src="https://lh3.googleusercontent.com/aida-public/AB6AXuArPXG1tpqrMtX70DeVHYVINIG9GThEbyFnVffUddO5NmpKlfn6_sS0m2blKoe15Rdgyypc-MnOSt1t-U2JZ-wjJgTdQ11DpEMcErKFcRJA96QiwSDhT5yeTwA2EYqhJBRmB3xFXvRl2jkbzwSGyeRmC0L8PrPdT8Dm-Lkq1zUk0zyASAK-ub38HYJTpVwNHemur55BOkPexFSTV1tX8oFdZqjjHkNLSVjXEI4cIoLsirnBEiNXAJtjVZ-ZV7sxcJso5ZSKXvZu5uA"/>
+</div>
+</div>
+</div>
+</header>
+<div class="relative z-10 flex flex-col min-h-screen w-full pt-16">
+<main class="flex-grow flex flex-col lg:flex-row h-[calc(100vh-64px)] overflow-hidden">
+<aside class="hidden lg:flex flex-col w-64 border-r border-surface-border bg-background-dark h-full justify-between">
+<nav class="flex flex-col p-6 space-y-1">
+<div class="mb-8 font-mono text-[10px] text-text-muted uppercase tracking-[0.2em] border-b border-surface-border pb-2">
+                        Interface_V1.0
+                    </div>
+<a class="group flex items-center gap-3 px-3 py-3 bg-white/5 border-l-2 border-white text-white" href="#">
+<span class="material-symbols-outlined text-lg">dashboard</span>
+<span class="text-xs font-mono uppercase tracking-widest">Overview</span>
+</a>
+<a class="group flex items-center gap-3 px-3 py-3 text-text-muted hover:text-white hover:bg-white/5 border-l-2 border-transparent hover:border-white/50 transition-all" href="#">
+<span class="material-symbols-outlined text-lg">calendar_month</span>
+<span class="text-xs font-mono uppercase tracking-widest">Schedule</span>
+</a>
+<a class="group flex items-center gap-3 px-3 py-3 text-text-muted hover:text-white hover:bg-white/5 border-l-2 border-transparent hover:border-white/50 transition-all" href="#">
+<span class="material-symbols-outlined text-lg">account_balance_wallet</span>
+<span class="text-xs font-mono uppercase tracking-widest">Finances</span>
+</a>
+<a class="group flex items-center gap-3 px-3 py-3 text-text-muted hover:text-white hover:bg-white/5 border-l-2 border-transparent hover:border-white/50 transition-all" href="#">
+<span class="material-symbols-outlined text-lg">graphic_eq</span>
+<span class="text-xs font-mono uppercase tracking-widest">Riders</span>
+</a>
+<a class="group flex items-center gap-3 px-3 py-3 text-text-muted hover:text-white hover:bg-white/5 border-l-2 border-transparent hover:border-white/50 transition-all" href="#">
+<span class="material-symbols-outlined text-lg">settings</span>
+<span class="text-xs font-mono uppercase tracking-widest">Config</span>
+</a>
+</nav>
+<div class="p-6 border-t border-surface-border">
+<div class="flex items-center justify-between text-[10px] font-mono text-text-muted mb-2">
+<span>CPU</span>
+<span class="text-white">12%</span>
+</div>
+<div class="w-full bg-white/10 h-0.5 mb-4">
+<div class="bg-white h-full w-[12%]"></div>
+</div>
+<div class="flex items-center justify-between text-[10px] font-mono text-text-muted mb-2">
+<span>MEM</span>
+<span class="text-white">48%</span>
+</div>
+<div class="w-full bg-white/10 h-0.5">
+<div class="bg-white h-full w-[48%]"></div>
+</div>
+</div>
+</aside>
+<div class="flex-grow flex flex-col overflow-y-auto">
+<div class="grid grid-cols-1 md:grid-cols-3 border-b border-surface-border">
+<div class="p-8 md:p-12 border-b md:border-b-0 md:border-r border-surface-border relative overflow-hidden group">
+<div class="absolute top-4 left-4 flex items-center gap-2">
+<div class="size-1.5 bg-tech-green rounded-full animate-pulse"></div>
+<span class="font-mono text-[10px] text-text-muted uppercase tracking-widest">Net Revenue (YTD)</span>
+</div>
+<div class="mt-8">
+<h3 class="font-mono text-6xl lg:text-7xl font-bold text-white tracking-tighter glow-text leading-none">
+<span class="text-4xl align-top opacity-50">$</span>42.8k
+                            </h3>
+<div class="mt-4 flex items-center gap-2 text-tech-green font-mono text-xs">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>+12.4% vs last month</span>
+</div>
+</div>
+<div class="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent"></div>
+</div>
+<div class="p-8 md:p-12 border-b md:border-b-0 md:border-r border-surface-border relative overflow-hidden group">
+<div class="absolute top-4 left-4 flex items-center gap-2">
+<span class="font-mono text-[10px] text-text-muted uppercase tracking-widest">Confirmed Bookings</span>
+</div>
+<div class="mt-8">
+<h3 class="font-mono text-6xl lg:text-7xl font-bold text-white tracking-tighter leading-none opacity-90">
+                                08
+                            </h3>
+<div class="mt-4 flex items-center gap-2 text-text-muted font-mono text-xs">
+<span>Next: Fabric, London (12d)</span>
+</div>
+</div>
+</div>
+<div class="p-8 md:p-12 relative overflow-hidden group">
+<div class="absolute top-4 left-4 flex items-center gap-2">
+<span class="font-mono text-[10px] text-text-muted uppercase tracking-widest">Artist Rating</span>
+</div>
+<div class="mt-8">
+<h3 class="font-mono text-6xl lg:text-7xl font-bold text-white tracking-tighter leading-none opacity-90">
+                                4.98
+                            </h3>
+<div class="mt-4 flex items-center gap-1">
+<span class="material-symbols-outlined text-white text-xs">star</span>
+<span class="material-symbols-outlined text-white text-xs">star</span>
+<span class="material-symbols-outlined text-white text-xs">star</span>
+<span class="material-symbols-outlined text-white text-xs">star</span>
+<span class="material-symbols-outlined text-white text-xs">star</span>
+</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col xl:flex-row flex-grow min-h-[500px]">
+<div class="w-full xl:w-3/4 border-b xl:border-b-0 xl:border-r border-surface-border p-6 md:p-12">
+<div class="flex justify-between items-end mb-8">
+<h2 class="text-3xl font-display font-bold uppercase tracking-tight">Gig Log</h2>
+<div class="flex gap-2">
+<button class="px-3 py-1 border border-surface-border hover:bg-white/5 text-[10px] font-mono uppercase text-text-muted hover:text-white transition-colors">Export CSV</button>
+<button class="px-3 py-1 border border-surface-border hover:bg-white/5 text-[10px] font-mono uppercase text-text-muted hover:text-white transition-colors">Filter</button>
+</div>
+</div>
+<div class="w-full overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-white/20">
+<th class="py-4 pl-2 pr-4 font-mono text-[10px] uppercase text-text-muted tracking-widest w-24">ID</th>
+<th class="py-4 px-4 font-mono text-[10px] uppercase text-text-muted tracking-widest w-32">Date</th>
+<th class="py-4 px-4 font-mono text-[10px] uppercase text-text-muted tracking-widest">Venue / Event</th>
+<th class="py-4 px-4 font-mono text-[10px] uppercase text-text-muted tracking-widest w-32">City</th>
+<th class="py-4 px-4 font-mono text-[10px] uppercase text-text-muted tracking-widest w-24 text-right">Status</th>
+<th class="py-4 pl-4 pr-2 font-mono text-[10px] uppercase text-text-muted tracking-widest w-32 text-right">Payout</th>
+</tr>
+</thead>
+<tbody class="font-mono text-xs">
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors group cursor-pointer">
+<td class="py-4 pl-2 pr-4 text-text-muted group-hover:text-white">#G-4092</td>
+<td class="py-4 px-4 text-white">24.10.23</td>
+<td class="py-4 px-4 font-bold text-white">Berghain / Panorama Bar</td>
+<td class="py-4 px-4 text-text-muted">Berlin</td>
+<td class="py-4 px-4 text-right"><span class="px-2 py-0.5 bg-tech-green/10 text-tech-green border border-tech-green/30 rounded text-[10px] uppercase">Completed</span></td>
+<td class="py-4 pl-4 pr-2 text-right text-white font-bold">$4,500.00</td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors group cursor-pointer">
+<td class="py-4 pl-2 pr-4 text-text-muted group-hover:text-white">#G-4093</td>
+<td class="py-4 px-4 text-white">31.10.23</td>
+<td class="py-4 px-4 font-bold text-white">Warehouse Project</td>
+<td class="py-4 px-4 text-text-muted">Manchester</td>
+<td class="py-4 px-4 text-right"><span class="px-2 py-0.5 bg-white/10 text-white border border-white/30 rounded text-[10px] uppercase">Upcoming</span></td>
+<td class="py-4 pl-4 pr-2 text-right text-white font-bold">$5,200.00</td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors group cursor-pointer">
+<td class="py-4 pl-2 pr-4 text-text-muted group-hover:text-white">#G-4094</td>
+<td class="py-4 px-4 text-white">04.11.23</td>
+<td class="py-4 px-4 font-bold text-white">De School</td>
+<td class="py-4 px-4 text-text-muted">Amsterdam</td>
+<td class="py-4 px-4 text-right"><span class="px-2 py-0.5 bg-white/10 text-white border border-white/30 rounded text-[10px] uppercase">Upcoming</span></td>
+<td class="py-4 pl-4 pr-2 text-right text-white font-bold">$3,800.00</td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors group cursor-pointer">
+<td class="py-4 pl-2 pr-4 text-text-muted group-hover:text-white">#G-4095</td>
+<td class="py-4 px-4 text-white">12.11.23</td>
+<td class="py-4 px-4 font-bold text-white">Output (Legacy Night)</td>
+<td class="py-4 px-4 text-text-muted">New York</td>
+<td class="py-4 px-4 text-right"><span class="px-2 py-0.5 bg-yellow-500/10 text-yellow-500 border border-yellow-500/30 rounded text-[10px] uppercase">Pending</span></td>
+<td class="py-4 pl-4 pr-2 text-right text-white font-bold">$6,000.00</td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors group cursor-pointer">
+<td class="py-4 pl-2 pr-4 text-text-muted group-hover:text-white">#G-4096</td>
+<td class="py-4 px-4 text-white">18.11.23</td>
+<td class="py-4 px-4 font-bold text-white">Contact</td>
+<td class="py-4 px-4 text-text-muted">Tokyo</td>
+<td class="py-4 px-4 text-right"><span class="px-2 py-0.5 bg-yellow-500/10 text-yellow-500 border border-yellow-500/30 rounded text-[10px] uppercase">Pending</span></td>
+<td class="py-4 pl-4 pr-2 text-right text-white font-bold">$4,200.00</td>
+</tr>
+<tr class="border-b border-white/5 hover:bg-white/5 transition-colors group cursor-pointer">
+<td class="py-4 pl-2 pr-4 text-text-muted group-hover:text-white">#G-4097</td>
+<td class="py-4 px-4 text-white">25.11.23</td>
+<td class="py-4 px-4 font-bold text-white">Bassiani</td>
+<td class="py-4 px-4 text-text-muted">Tbilisi</td>
+<td class="py-4 px-4 text-right"><span class="px-2 py-0.5 bg-white/10 text-white border border-white/30 rounded text-[10px] uppercase">Inquiry</span></td>
+<td class="py-4 pl-4 pr-2 text-right text-white font-bold">$3,500.00</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="w-full xl:w-1/4 p-6 md:p-12 bg-[#080808]">
+<div class="h-full flex flex-col">
+<div class="mb-10">
+<h2 class="text-sm font-mono font-bold uppercase tracking-widest text-text-muted mb-6 flex items-center gap-2">
+<span class="size-2 bg-white rounded-full animate-pulse"></span>
+                                    Signal Strength
+                                </h2>
+<div class="relative w-full aspect-square border border-surface-border bg-black p-4 flex items-center justify-center">
+<div class="absolute inset-0 blueprint-grid opacity-30"></div>
+<div class="relative size-40 md:size-48 rounded-full border border-white/10 flex items-center justify-center">
+<svg class="transform -rotate-90 w-full h-full" viewBox="0 0 100 100">
+<circle cx="50" cy="50" fill="transparent" r="45" stroke="#222" stroke-width="2"></circle>
+<circle cx="50" cy="50" fill="transparent" r="45" stroke="white" stroke-dasharray="283" stroke-dashoffset="70" stroke-width="2"></circle>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="text-5xl font-mono font-bold text-white tracking-tighter">75%</span>
+<span class="text-[10px] font-mono text-text-muted uppercase mt-1">Completion</span>
+</div>
+</div>
+<div class="absolute top-0 left-0 w-2 h-2 border-t border-l border-white"></div>
+<div class="absolute top-0 right-0 w-2 h-2 border-t border-r border-white"></div>
+<div class="absolute bottom-0 left-0 w-2 h-2 border-b border-l border-white"></div>
+<div class="absolute bottom-0 right-0 w-2 h-2 border-b border-r border-white"></div>
+</div>
+</div>
+<div class="space-y-6 flex-grow">
+<h3 class="text-xs font-mono font-bold uppercase text-white border-b border-white/20 pb-2">Pending Actions</h3>
+<div class="group flex gap-4 items-start">
+<div class="size-2 mt-1.5 bg-tech-red rounded-none group-hover:bg-white transition-colors"></div>
+<div>
+<p class="text-sm text-gray-300 font-display font-medium group-hover:text-white transition-colors">Upload Press Kit</p>
+<p class="text-[10px] text-gray-500 font-mono mt-1">REQUIRED FOR BOOKING</p>
+</div>
+<button class="ml-auto text-white opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="group flex gap-4 items-start">
+<div class="size-2 mt-1.5 bg-tech-red rounded-none group-hover:bg-white transition-colors"></div>
+<div>
+<p class="text-sm text-gray-300 font-display font-medium group-hover:text-white transition-colors">Connect Soundcloud</p>
+<p class="text-[10px] text-gray-500 font-mono mt-1">SYNC LATEST MIXES</p>
+</div>
+<button class="ml-auto text-white opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<div class="group flex gap-4 items-start">
+<div class="size-2 mt-1.5 bg-gray-600 rounded-none group-hover:bg-white transition-colors"></div>
+<div>
+<p class="text-sm text-gray-300 font-display font-medium group-hover:text-white transition-colors">Verify ID</p>
+<p class="text-[10px] text-gray-500 font-mono mt-1">OPTIONAL • TRUST BADGE</p>
+</div>
+<button class="ml-auto text-white opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</div>
+<div class="mt-auto pt-6 border-t border-surface-border">
+<button class="w-full bg-white text-black font-display font-bold uppercase tracking-widest text-xs py-3 hover:bg-gray-200 transition-colors">
+                                    Update Profile
+                                </button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+
+</body></html>
