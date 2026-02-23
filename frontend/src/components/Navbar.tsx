@@ -127,55 +127,53 @@ const Navbar: React.FC<NavbarProps> = ({ isTransparent = false }) => {
                     </div>
                 )}
             </div>
-        </div >
 
-            {/* Logout Warning Modal */ }
+            {/* Logout Warning Modal */}
             <AnimatePresence>
-    {
-        showLogoutWarning && (
-            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    exit={{ opacity: 0 }}
-                    onClick={() => setShowLogoutWarning(false)}
-                    className="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer"
-                />
-                <motion.div
-                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                    className="relative w-full max-w-md bg-black border border-white/20 p-8 shadow-2xl glass-card overflow-hidden text-center"
-                >
-                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-50"></div>
-
-                    <div className="size-16 rounded-full border border-red-500/50 flex items-center justify-center mx-auto mb-6 text-red-500">
-                        <span className="material-symbols-outlined text-3xl">warning</span>
-                    </div>
-
-                    <h3 className="text-2xl font-display font-bold uppercase mb-4 tracking-tight">Disconnect Node?</h3>
-                    <p className="font-mono text-sm text-gray-400 mb-8 leading-relaxed">
-                        You are about to terminate your active session and disconnect from the network.
-                    </p>
-
-                    <div className="flex gap-4">
-                        <button
+                {showLogoutWarning && (
+                    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
                             onClick={() => setShowLogoutWarning(false)}
-                            className="flex-1 border border-white/30 text-white px-6 py-3 font-display font-bold uppercase tracking-widest text-xs hover:bg-white/10 transition-colors"
+                            className="absolute inset-0 bg-black/80 backdrop-blur-sm cursor-pointer"
+                        />
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                            animate={{ opacity: 1, scale: 1, y: 0 }}
+                            exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                            className="relative w-full max-w-md bg-black border border-white/20 p-8 shadow-2xl glass-card overflow-hidden text-center"
                         >
-                            Cancel
-                        </button>
-                        <button
-                            onClick={confirmLogout}
-                            className="flex-1 bg-white text-black px-6 py-3 font-display font-bold uppercase tracking-widest text-xs hover:bg-red-500 hover:text-white transition-colors"
-                        >
-                            Confirm Disconnect
-                        </button>
+                            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-red-500 to-transparent opacity-50"></div>
+
+                            <div className="size-16 rounded-full border border-red-500/50 flex items-center justify-center mx-auto mb-6 text-red-500">
+                                <span className="material-symbols-outlined text-3xl">warning</span>
+                            </div>
+
+                            <h3 className="text-2xl font-display font-bold uppercase mb-4 tracking-tight">Disconnect Node?</h3>
+                            <p className="font-mono text-sm text-gray-400 mb-8 leading-relaxed">
+                                You are about to terminate your active session and disconnect from the network.
+                            </p>
+
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={() => setShowLogoutWarning(false)}
+                                    className="flex-1 border border-white/30 text-white px-6 py-3 font-display font-bold uppercase tracking-widest text-xs hover:bg-white/10 transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={confirmLogout}
+                                    className="flex-1 bg-white text-black px-6 py-3 font-display font-bold uppercase tracking-widest text-xs hover:bg-red-500 hover:text-white transition-colors"
+                                >
+                                    Confirm Disconnect
+                                </button>
+                            </div>
+                        </motion.div>
                     </div>
-                </motion.div>
-            </div>
-        )
-    }
+                )
+                }
             </AnimatePresence >
         </>
     );
