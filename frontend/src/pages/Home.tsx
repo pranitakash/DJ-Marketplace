@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const Home: React.FC = () => {
   const { user, logout } = useAuth();
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
     <>
@@ -23,7 +24,7 @@ const Home: React.FC = () => {
 
           <div className="hidden md:flex items-center gap-12">
             <nav className="flex gap-8">
-              <Link to="/directory" className="text-gray-400 hover:text-white transition-colors text-xs font-display uppercase tracking-widest">Directory</Link>
+              <Link to="/explore" className="text-gray-400 hover:text-white transition-colors text-xs font-display uppercase tracking-widest">Directory</Link>
               <Link to="/journal" className="text-gray-400 hover:text-white transition-colors text-xs font-display uppercase tracking-widest">Journal</Link>
               <Link to="/explore" className="text-gray-400 hover:text-white transition-colors text-xs font-display uppercase tracking-widest">Access</Link>
             </nav>
@@ -44,10 +45,37 @@ const Home: React.FC = () => {
             )}
           </div>
 
-          <button className="md:hidden text-white">
-            <span className="material-symbols-outlined">menu</span>
+          <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="md:hidden text-white z-50">
+            <span className="material-symbols-outlined">{isMobileMenuOpen ? 'close' : 'menu'}</span>
           </button>
         </header>
+
+        {/* Mobile Menu */}
+        <div className={`fixed inset-0 bg-black/95 backdrop-blur-xl z-40 transition-transform duration-500 flex flex-col items-center justify-center gap-8 ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'} md:hidden`}>
+          <Link to="/explore" onClick={() => setIsMobileMenuOpen(false)} className="text-3xl font-display uppercase tracking-widest text-white hover:text-gray-400">Directory</Link>
+          <Link to="/journal" onClick={() => setIsMobileMenuOpen(false)} className="text-3xl font-display uppercase tracking-widest text-white hover:text-gray-400">Journal</Link>
+
+          {user ? (
+            <div className="flex flex-col items-center gap-6 mt-8">
+              <span className="text-gray-400 font-mono text-sm uppercase tracking-widest border-b border-white/20 pb-2">Logged in as {user.name}</span>
+              <Link to={`/dashboard/${user.role || 'user'}`} onClick={() => setIsMobileMenuOpen(false)} className="bg-white text-black px-12 py-4 text-sm font-bold uppercase tracking-widest w-full text-center">
+                Dashboard
+              </Link>
+              <button onClick={() => { logout(); setIsMobileMenuOpen(false); }} className="border border-white/30 text-white px-12 py-4 text-sm font-bold uppercase tracking-widest w-full text-center hover:bg-white/10">
+                Log Out
+              </button>
+            </div>
+          ) : (
+            <div className="flex flex-col gap-4 mt-8 w-64">
+              <Link to="/login" onClick={() => setIsMobileMenuOpen(false)} className="border border-white/30 text-white hover:bg-white hover:text-black transition-all duration-300 px-6 py-4 text-sm text-center font-bold uppercase tracking-widest w-full">
+                Log In
+              </Link>
+              <Link to="/signup" onClick={() => setIsMobileMenuOpen(false)} className="bg-white text-black hover:bg-gray-200 transition-all duration-300 px-6 py-4 text-sm text-center font-bold uppercase tracking-widest w-full">
+                Sign Up
+              </Link>
+            </div>
+          )}
+        </div>
 
         <main className="flex-grow pl-0 lg:pl-20">
           <section className="relative h-screen w-full flex items-center justify-center overflow-hidden border-b border-white/10">
@@ -129,7 +157,7 @@ const Home: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10">
               {/* Artist Card 1 */}
-              <div className="group relative aspect-[3/4] overflow-hidden bg-black">
+              <Link to="/explore" className="group relative aspect-[3/4] overflow-hidden bg-black block cursor-pointer">
                 <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAHuwi1OBEG19lfsbI5Jww52LdyDiuRBk8fKyXHW12NjgGh211Vsnnz1RzWOU0f0lgj3s0R_F6GQCRVsvJnzZ2WOADQ0xQtI-nGaSJa7ainqmEjWOrsyfGN2YubxK0NYnMiCexrAuCOzOuq-lxcQobBL7BxOjKuXSx284_lNFudA_VBMotevMgo0mqRybbdjLO0cElp05z_-rbUGxGoaRSYq_sqCU6AFtf_m7Yj2S5lfvGXd-cPJEaIt_fPpHCjf5P_kIZ9EAMihMc")' }}></div>
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500"></div>
                 <div className="absolute inset-0 flex flex-col justify-between p-6 opacity-100 transition-opacity duration-300">
@@ -147,10 +175,10 @@ const Home: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
 
               {/* Artist Card 2 */}
-              <div className="group relative aspect-[3/4] overflow-hidden bg-black">
+              <Link to="/explore" className="group relative aspect-[3/4] overflow-hidden bg-black block cursor-pointer">
                 <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAtTfCAokDmRpVmxug0R8vhH6t-R78GS5NRG4HlhjDKAADQ1VK9_aUG7cSccD4r7kcDh_RaWhLuHfRgbpCUTeFlNnqfKabEgG9hnDTsv2q6d7m9YTZL4dEcA0KFf0hdgVtyn1sslDFpR6KUkxhGAsGlEGuw5BwRjV6fCGlP9G_0R1yUmOmrndJI3Digq_lyGjd-BkNLlXEFDL0Q7qxz0FGC7kqpGHXX_aESfZmabH8xjNm3wc_BXhX7fUoFR6U2Rl_ESOr78P7hVuw")' }}></div>
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500"></div>
                 <div className="absolute inset-0 flex flex-col justify-between p-6 opacity-100 transition-opacity duration-300">
@@ -168,10 +196,10 @@ const Home: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
 
               {/* Artist Card 3 */}
-              <div className="group relative aspect-[3/4] overflow-hidden bg-black">
+              <Link to="/explore" className="group relative aspect-[3/4] overflow-hidden bg-black block cursor-pointer">
                 <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAuvf3GnbjgmslXy54fNhrm3akAB-gR1ZhHt8Ok86N1nsJIQfx0h7nDMoIqfb-efGAEcWYatLv6ScklCA49hUTlvfsNWZWgn17D_loaBFjUbAwlifMhjC-iiFwS2rBdP2d_m2bYBEuJfJQgpSuMN2ynt3b9ioWKUgaT5SBYBFKaGJOVGjrB8QL7yKrlhJfjs_9sKTNVVmn_XgNiWfiNgFOJK3sT-P_yJzLFNjXZSZ5T5zctw5Z8qjljQLqvbuGFbQiUtpKol400gfg")' }}></div>
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500"></div>
                 <div className="absolute inset-0 flex flex-col justify-between p-6 opacity-100 transition-opacity duration-300">
@@ -189,10 +217,10 @@ const Home: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
 
               {/* Artist Card 4 */}
-              <div className="group relative aspect-[3/4] overflow-hidden bg-black">
+              <Link to="/explore" className="group relative aspect-[3/4] overflow-hidden bg-black block cursor-pointer">
                 <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAeCitjeYDV5X9zJzuc2i-aLScgSBhQ_ewixST0zeHJ7W_CQYwGWAohf_Hc0nMt2spxKsCtmAYmSuy-XiB4JjEJOZZvSb87HHQtFyc3fVWnpJIFK5IqmqQNgaMNz3tV99GFVwUroRzm8KkFkrtw8545YI8OizSGg_ou4DhpTFWIf10aj3UiAObLIcVHkn43SmPCN-bqWmecPh-Bq7Awnk0FaAzY7U7kjcJ0DbviSLW62LQlDCfaHyt5lBXUdXj4Za8B4H22KMwXSvY")' }}></div>
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500"></div>
                 <div className="absolute inset-0 flex flex-col justify-between p-6 opacity-100 transition-opacity duration-300">
@@ -210,7 +238,7 @@ const Home: React.FC = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+              </Link>
             </div>
           </section>
 
@@ -290,18 +318,18 @@ const Home: React.FC = () => {
                 <h4 className="font-mono text-xs text-gray-500 uppercase mb-6">Directory</h4>
                 <ul className="space-y-2 font-display uppercase tracking-wider text-sm">
                   <li><Link to="/explore" className="hover:text-gray-400 transition-colors">Artists</Link></li>
-                  <li><Link to="/explore" className="hover:text-gray-400 transition-colors">Venues</Link></li>
-                  <li><Link to="/explore" className="hover:text-gray-400 transition-colors">Events</Link></li>
-                  <li><Link to="/explore" className="hover:text-gray-400 transition-colors">Pricing</Link></li>
+                  <li><Link to="/venues" className="hover:text-gray-400 transition-colors">Venues</Link></li>
+                  <li><Link to="/events" className="hover:text-gray-400 transition-colors">Events</Link></li>
+                  <li><Link to="/pricing" className="hover:text-gray-400 transition-colors">Pricing</Link></li>
                 </ul>
               </div>
 
               <div>
                 <h4 className="font-mono text-xs text-gray-500 uppercase mb-6">Connect</h4>
                 <ul className="space-y-2 font-display uppercase tracking-wider text-sm">
-                  <li><a href="#" className="hover:text-gray-400 transition-colors">Instagram</a></li>
-                  <li><a href="#" className="hover:text-gray-400 transition-colors">SoundCloud</a></li>
-                  <li><a href="#" className="hover:text-gray-400 transition-colors">Contact</a></li>
+                  <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400 transition-colors">Instagram</a></li>
+                  <li><a href="https://soundcloud.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400 transition-colors">SoundCloud</a></li>
+                  <li><Link to="/contact" className="hover:text-gray-400 transition-colors">Contact</Link></li>
                 </ul>
               </div>
             </div>
@@ -311,9 +339,9 @@ const Home: React.FC = () => {
                 © 2023 DJ Night Inc.<br />
                 All rights reserved.
               </p>
-              <div className="flex gap-4 font-mono text-[10px] text-gray-500 uppercase">
-                <a href="#" className="hover:text-white">Privacy Policy</a>
-                <a href="#" className="hover:text-white">Terms of Service</a>
+              <div className="flex gap-4 font-mono text-[10px] text-gray-500 uppercase z-10">
+                <Link to="/privacy" className="hover:text-white">Privacy Policy</Link>
+                <Link to="/terms" className="hover:text-white">Terms of Service</Link>
               </div>
               <h2 className="text-[12vw] leading-[0.7] font-display font-bold text-[#111] select-none pointer-events-none absolute bottom-0 right-0 -z-0 opacity-50 overflow-hidden mix-blend-overlay">DJ NIGHT</h2>
             </div>
