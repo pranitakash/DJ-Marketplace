@@ -18,8 +18,10 @@ export const registerUser = async (req: Request, res: Response) => {
 
     const uid = userRecord.uid;
 
-    const userRef = db.collection("users").doc(uid)
+    // Set custom claims for role-based security in Socket.io and Firestore
+    await auth.setCustomUserClaims(uid, { role });
 
+    const userRef = db.collection("users").doc(uid)
     await userRef.set({
       email,
       name,
@@ -27,6 +29,20 @@ export const registerUser = async (req: Request, res: Response) => {
       uid,
       createdAt: new Date(),
     })
+
+    // If DJ, create entry in djs collection to be visible in discovery
+    if (role === 'dj') {
+      await db.collection("djs").doc(uid).set({
+        userId: uid,
+        stageName: name,
+        location: "Update Location",
+        genres: ["Update Genres"],
+        hourlyRate: 0,
+        bio: "Update your bio",
+        rating: 0,
+        createdAt: new Date(),
+      })
+    }
 
     res.status(201).json({ message: "User registered successfully", uid })
   } catch (error: any) {

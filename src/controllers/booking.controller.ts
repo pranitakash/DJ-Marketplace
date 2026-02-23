@@ -2,6 +2,7 @@ import { Request, Response } from "express";
 import { db } from "../config/firebase.js";
 import { getIO } from "../socket.js";
 import { Timestamp } from "firebase-admin/firestore";
+
 export const createBooking = async (req: Request, res: Response) => {
   try {
     const booking = req.body;
@@ -125,5 +126,36 @@ export const cancelBooking = async (req: Request, res: Response) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Error cancelling booking" })
+  }
+}
+
+export const getBookings = async (req: Request, res: Response) => {
+  try {
+    const uid = req.user?.uid;
+    const role = req.user?.role;
+
+    if (!uid) {
+      return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    let query: any = db.collection("bookings");
+    if (role === 'admin') {
+      // Admin sees all
+    } else if (role === 'dj') {
+      query = query.where("djId", "==", uid);
+    } else {
+      query = query.where("userId", "==", uid);
+    }
+
+    const snapshot = await query.orderBy("createdAt", "desc").get();
+    const bookings = snapshot.docs.map((doc: any) => ({
+      id: doc.id,
+      ...doc.data()
+    }));
+
+    return res.status(200).json(bookings);
+  } catch (error) {
+    console.error("Error fetching bookings:", error);
+    return res.status(500).json({ message: "Error fetching bookings" });
   }
 }

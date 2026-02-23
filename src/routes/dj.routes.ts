@@ -32,15 +32,17 @@
  *         description: Internal server error.
  */
 import express from "express";
-import { createDJ, getAllDJs, getDJAnalytics, addReview, getDJReviews } from "../controllers/dj.controller.js";
+import { createDJ, getAllDJs, getDJById, updateDJProfile, getDJAnalytics, addReview, getDJReviews } from "../controllers/dj.controller.js";
 import { verifyToken } from "../middleware/auth.middleware.js";
-import { requireRole } from "../middleware/role.middleware.js";
+import { authorize } from "../middleware/authorize.js";
 
 const router = express.Router();
 
 router.post("/", verifyToken, createDJ);
 router.get("/", getAllDJs);
-router.get("/analytics", verifyToken, requireRole("dj"), getDJAnalytics);
+router.get("/analytics", verifyToken, authorize(["dj"]), getDJAnalytics);
+router.get("/:id", getDJById);
+router.put("/profile", verifyToken, authorize(["dj"]), updateDJProfile);
 router.post("/review", verifyToken, addReview);
 router.get("/review/:djId", verifyToken, getDJReviews);
 

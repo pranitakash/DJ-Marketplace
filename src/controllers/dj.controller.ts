@@ -3,16 +3,34 @@ import { db } from "../config/firebase.js";
 
 export const createDJ = async (req: Request, res: Response) => {
     try {
-        const data = req.body
+        const uid = req.user?.uid;
+        if (!uid) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
 
-        const docRef = await db.collection("djs").add({
-            ...data, createdAt: new Date(),
-        })
+        const data = req.body;
 
-        res.status(201).json({ message: "DJ created successfully", id: docRef.id })
+        // Prevent unauthorized field updates
+        const sanitizedData = {
+            stageName: data.stageName || "",
+            location: data.location || "",
+            genres: data.genres || [],
+            hourlyRate: Number(data.hourlyRate) || 0,
+            bio: data.bio || "",
+            userId: uid,
+            rating: 0,
+            isVerified: false,
+            isBlocked: false,
+            createdAt: new Date(),
+        };
+
+        await db.collection("djs").doc(uid).set(sanitizedData);
+
+        res.status(201).json({ message: "DJ profile created successfully", id: uid });
 
     } catch (error) {
-        res.status(500).json({ message: "Error creating DJ" });
+        console.error("Error creating DJ:", error);
+        res.status(500).json({ message: "Error creating DJ profile" });
     }
 }
 
@@ -65,6 +83,60 @@ export const getAllDJs = async (req: Request, res: Response) => {
     }
 }
 
+export const getDJById = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params as { id: string };
+        const djDoc = await db.collection("djs").doc(id).get();
+
+        if (!djDoc.exists) {
+            return res.status(404).json({ message: "DJ not found" });
+        }
+
+        return res.status(200).json({
+            id: djDoc.id,
+            ...djDoc.data()
+        });
+    } catch (error) {
+        console.log("Error fetching DJ:", error);
+        return res.status(500).json({ message: "Error fetching DJ profile" });
+    }
+}
+
+export const updateDJProfile = async (req: Request, res: Response) => {
+    try {
+        const uid = req.user?.uid;
+        if (!uid) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const data = req.body;
+
+        // Protection Layer: Only allow these fields to be updated by the DJ
+        const allowableFields = ['stageName', 'location', 'genres', 'hourlyRate', 'bio'];
+        const updateData: any = {};
+
+        allowableFields.forEach(field => {
+            if (data[field] !== undefined) {
+                updateData[field] = data[field];
+            }
+        });
+
+        if (Object.keys(updateData).length === 0) {
+            return res.status(400).json({ message: "No valid fields provided for update" });
+        }
+
+        await db.collection("djs").doc(uid).update({
+            ...updateData,
+            updatedAt: new Date(),
+        });
+
+        return res.status(200).json({ message: "Profile updated successfully" });
+    } catch (error) {
+        console.log("Error updating DJ profile:", error);
+        return res.status(500).json({ message: "Error updating DJ profile" });
+    }
+}
+
 export const getDJAnalytics = async (req: Request, res: Response) => {
     try {
         const uid = req.user?.uid
@@ -102,7 +174,7 @@ export const getDJAnalytics = async (req: Request, res: Response) => {
             }
             if (booking.status === "completed") {
                 completedBookings++
-                totalRevenue += booking.price || 0
+                totalRevenue += booking.totalAmount || 0
             }
         })
 
