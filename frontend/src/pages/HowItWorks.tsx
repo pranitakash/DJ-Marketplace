@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 const HowItWorks: React.FC = () => {
     return (
@@ -53,6 +54,7 @@ const HowItWorks: React.FC = () => {
                         </Link>
                     </div>
                 </main>
+                <Footer />
             </div>
         </>
     );

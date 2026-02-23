@@ -121,21 +121,43 @@ const Signup: React.FC = () => {
               </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-white text-black font-display font-bold uppercase tracking-widest text-xs py-4 hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed mt-8"
-            >
-              {loading ? 'Executing...' : 'Initialize Profile'}
-            </button>
+            <div className="mt-8">
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full bg-white text-black font-display font-bold uppercase tracking-widest text-xs py-4 hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? 'Creating Identity...' : 'Initialize Identity'}
+              </button>
+            </div>
           </form>
 
-          <div className="mt-8 pt-6 border-t border-white/10 text-center font-mono text-xs text-gray-500">
-            Node already initialized?{' '}
-            <Link to="/login" className="text-white hover:underline uppercase tracking-wider ml-1">
-              Log In
-            </Link>
+          <div className="mt-8 pt-8 border-t border-white/10">
+            <p className="text-center font-mono text-[10px] text-gray-500 uppercase tracking-widest mb-6">Alternative Protocols</p>
+            <div className="flex flex-col sm:flex-row gap-4">
+              <button
+                type="button"
+                className="w-full border border-white/30 text-white font-display font-bold uppercase tracking-widest text-xs py-4 hover:bg-white hover:text-black transition-all flex items-center justify-center gap-3"
+                onClick={() => alert("Google Auth Flow Initiated")}
+              >
+                <div className="size-4 bg-white rounded-full flex items-center justify-center text-black text-[10px] bg-opacity-80">G</div>
+                Join via Google
+              </button>
+
+              <button
+                type="button"
+                className="w-full border border-white/30 text-white font-display font-bold uppercase tracking-widest text-xs py-4 hover:bg-white hover:text-black transition-all flex items-center justify-center gap-3"
+                onClick={() => alert("Phone Auth Flow Initiated")}
+              >
+                <span className="material-symbols-outlined text-[16px]">call</span>
+                Join via Phone
+              </button>
+            </div>
           </div>
+
+          <p className="font-mono text-center text-xs mt-8 text-gray-400">
+            Node Already Exists? <Link to="/login" className="text-white hover:underline transition-all">Establish Connection</Link>
+          </p>
         </div>
       </div>
     </>

@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 40 },
@@ -182,7 +183,7 @@ const Home: React.FC = () => {
 
               {/* Artist Card 4 */}
               <Link to="/explore" className="group relative aspect-[3/4] overflow-hidden bg-black block cursor-pointer hover-butter border border-transparent hover:border-white/20">
-                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAeCitjeYDV5X9zJzuc2i-aLScgSBhQ_ewixST0zeHJ7W_CQYwGWAohf_Hc0nMt2spxKsCtmAYmSuy-XiB4JjEJOZZvSb87HHQtFyc3fVWnpJIFK5IqmqQNgaMNz3tV99GFVwUroRzm8KkFkrtw8545YI8OizSGg_ou4DhpTFWIf10aj3UiAObLIcVHkn43SmPCN-bqWmecPh-Bq7Awnk0FaAzY7U7kjcJ0DbviSLW62LQlDCfaHyt5lBXUdXj4Za8B4H22KMwXSvY")' }}></div>
+                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAeCitjeYDV5X9zJzuc2i-aLScgSBhQ_ewixST0zeHJ7W_CQYwGWAohf_Hc0nMt2spxKsCtmAYmSuy-XiB4JjEJOZZySb87HHQtFyc3fVWnpJIFK5IqmqQNgaMNz3tV99GFVwUroRzm8KkFkrtw8545I8OizSGg_ou4DhpTFWIf10aj3UiAObLIcVHkn43SmPCN-bqWmecPh-Bq7Awnk0FaAzY7U7kjcJ0DbviSLW62LQlDCfaHyt5lBXUdXj4Za8B4H22KMwXSvY")' }}></div>
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500"></div>
                 <div className="absolute inset-0 flex flex-col justify-between p-6 opacity-100 transition-opacity duration-300">
                   <div className="flex justify-between items-start">
@@ -246,7 +247,7 @@ const Home: React.FC = () => {
 
               <div className="relative h-[600px] border border-white/10 p-2">
                 <div className="h-full w-full relative overflow-hidden bg-[#111]">
-                  <div className="absolute inset-0 bg-cover bg-center grayscale contrast-125" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAB8HHQXY76XplmpfU7xUXHwmE-ID5EbFvbxFD4jgQxOJE7x5xUcqi_5AfHzxVrr29Y2DVuj4bQkQQbM2qsGME3lV0OoCHtRlKHGov-JO58CTBzDufSi74MoPOFcUxVyZF1fLoAkh88L972POL6o_a41YXnB3EjTi4xGHiC6oJtOK2y_8F8XvXZ2iZbY6K33APeFYt1UhpeF2uMK59NDhgTzWQnzPLCUSUQSwULlosLhJR54DkYOIPCNHbyW4xoWDCuO9gDbIKIKC8")' }}></div>
+                  <div className="absolute inset-0 bg-cover bg-center grayscale contrast-125" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAB8HHQXY76XplmpfU7xUXHwmE-ID5EbFvbxFD4jgQxOJE7x5xUcqi_5AfHzxVrr29Y2DVuj4bQkQQbM2qsGME3lV0OoCHtRlKHGov-JO58CTBzDufSi74MoPOFcUxVyZF1fLoAkh88L972POL6o_a41YXnB3EjTi4xGHiC6oJtOK2y_8F8XvXZ2iZbY6K33APfFYt1UhpeF2uMK59NDhgTzWQnzPLCUSUQSwULlosLhJR54DkYOIPCNHbyW4xoWDCuO9gDbIKIKC8")' }}></div>
                   <div className="absolute top-4 left-4 border border-white/30 bg-black/50 backdrop-blur px-3 py-1">
                     <span className="font-mono text-[10px] text-white uppercase tracking-widest">● LIVE SIGNAL</span>
                   </div>
@@ -265,48 +266,7 @@ const Home: React.FC = () => {
             </div>
           </section>
 
-          <footer className="bg-black text-white pt-24 pb-8 border-t border-white/10">
-            <div className="px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
-              <div className="col-span-1 md:col-span-2">
-                <h2 className="text-5xl font-display font-bold uppercase mb-6 tracking-tight">Stay Tuned</h2>
-                <div className="flex border-b border-white pb-2 max-w-md">
-                  <input className="bg-transparent border-none w-full text-white placeholder-gray-500 focus:ring-0 px-0 font-mono text-sm uppercase" placeholder="ENTER YOUR EMAIL" type="email" />
-                  <button className="font-display font-bold uppercase text-sm hover:text-gray-300">Subscribe</button>
-                </div>
-              </div>
-
-              <div>
-                <h4 className="font-mono text-xs text-gray-500 uppercase mb-6">Directory</h4>
-                <ul className="space-y-2 font-display uppercase tracking-wider text-sm">
-                  <li><Link to="/explore" className="hover:text-gray-400 transition-colors">Artists</Link></li>
-                  <li><Link to="/venues" className="hover:text-gray-400 transition-colors">Venues</Link></li>
-                  <li><Link to="/events" className="hover:text-gray-400 transition-colors">Events</Link></li>
-                  <li><Link to="/pricing" className="hover:text-gray-400 transition-colors">Pricing</Link></li>
-                </ul>
-              </div>
-
-              <div>
-                <h4 className="font-mono text-xs text-gray-500 uppercase mb-6">Connect</h4>
-                <ul className="space-y-2 font-display uppercase tracking-wider text-sm">
-                  <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400 transition-colors">Instagram</a></li>
-                  <li><a href="https://soundcloud.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400 transition-colors">SoundCloud</a></li>
-                  <li><Link to="/contact" className="hover:text-gray-400 transition-colors">Contact</Link></li>
-                </ul>
-              </div>
-            </div>
-
-            <div className="px-6 md:px-12 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-end gap-4">
-              <p className="font-mono text-[10px] text-gray-500 uppercase">
-                © 2023 DJ Night Inc.<br />
-                All rights reserved.
-              </p>
-              <div className="flex gap-4 font-mono text-[10px] text-gray-500 uppercase z-10">
-                <Link to="/privacy" className="hover:text-white">Privacy Policy</Link>
-                <Link to="/terms" className="hover:text-white">Terms of Service</Link>
-              </div>
-              <h2 className="text-[12vw] leading-[0.7] font-display font-bold text-[#111] select-none pointer-events-none absolute bottom-0 right-0 -z-0 opacity-50 overflow-hidden mix-blend-overlay">DJ NIGHT</h2>
-            </div>
-          </footer>
+          <Footer />
         </main>
       </div>
     </>

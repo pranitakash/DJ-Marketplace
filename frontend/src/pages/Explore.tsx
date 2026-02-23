@@ -19,21 +19,31 @@ const Explore: React.FC = () => {
     const [loading, setLoading] = useState(true);
     const [genreFilter, setGenreFilter] = useState<string>('all');
     const [sortBy, setSortBy] = useState<string>('rating-desc');
+    const [location, setLocation] = useState<string>('');
+    const [minPrice, setMinPrice] = useState<string>('');
+    const [maxPrice, setMaxPrice] = useState<string>('');
+
     const { user, logout } = useAuth();
 
+    const fetchDjs = async () => {
+        setLoading(true);
+        try {
+            const params: any = {};
+            if (location) params.location = location;
+            if (minPrice) params.minPrice = minPrice;
+            if (maxPrice) params.maxPrice = maxPrice;
+
+            const response = await api.get('/djs', { params });
+            const data = response.data.data || response.data;
+            setDjs(Array.isArray(data) ? data : []);
+        } catch (error) {
+            console.error('Failed to fetch DJs:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        const fetchDjs = async () => {
-            try {
-                const response = await api.get('/djs');
-                // Handle generic response format { success, data, message } or direct array
-                const data = response.data.data || response.data;
-                setDjs(Array.isArray(data) ? data : []);
-            } catch (error) {
-                console.error('Failed to fetch DJs:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
         fetchDjs();
     }, []);
 
@@ -97,26 +107,58 @@ const Explore: React.FC = () => {
                             </h1>
                         </div>
 
-                        <div className="flex flex-col sm:flex-row gap-4 w-full md:w-auto">
-                            <select
-                                value={genreFilter}
-                                onChange={(e) => setGenreFilter(e.target.value)}
-                                className="bg-black/50 border border-white/20 text-white px-4 py-3 font-mono text-sm uppercase focus:outline-none focus:border-white"
-                            >
-                                {genres.map(g => (
-                                    <option key={g} value={g}>{g === 'all' ? 'All Genres' : g}</option>
-                                ))}
-                            </select>
+                        <div className="flex flex-col gap-4 w-full md:w-auto mt-4 md:mt-0">
+                            <div className="flex flex-col sm:flex-row gap-4 w-full justify-end">
+                                <input
+                                    type="text"
+                                    placeholder="Location (e.g. Berlin)"
+                                    value={location}
+                                    onChange={(e) => setLocation(e.target.value)}
+                                    className="bg-black/50 border border-white/20 text-white px-4 py-3 font-mono text-sm uppercase focus:outline-none focus:border-white w-full sm:w-48 placeholder:text-gray-600"
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Min $"
+                                    value={minPrice}
+                                    onChange={(e) => setMinPrice(e.target.value)}
+                                    className="bg-black/50 border border-white/20 text-white px-4 py-3 font-mono text-sm uppercase focus:outline-none focus:border-white w-full sm:w-28 placeholder:text-gray-600"
+                                />
+                                <input
+                                    type="number"
+                                    placeholder="Max $"
+                                    value={maxPrice}
+                                    onChange={(e) => setMaxPrice(e.target.value)}
+                                    className="bg-black/50 border border-white/20 text-white px-4 py-3 font-mono text-sm uppercase focus:outline-none focus:border-white w-full sm:w-28 placeholder:text-gray-600"
+                                />
+                                <button
+                                    onClick={fetchDjs}
+                                    className="bg-white text-black font-display font-bold uppercase tracking-widest text-xs px-6 py-3 hover:bg-gray-200 transition-colors"
+                                >
+                                    Apply
+                                </button>
+                            </div>
 
-                            <select
-                                value={sortBy}
-                                onChange={(e) => setSortBy(e.target.value)}
-                                className="bg-black/50 border border-white/20 text-white px-4 py-3 font-mono text-sm uppercase focus:outline-none focus:border-white"
-                            >
-                                <option value="rating-desc">Top Rated</option>
-                                <option value="rate-asc">Rate: Low to High</option>
-                                <option value="rate-desc">Rate: High to Low</option>
-                            </select>
+                            <div className="flex flex-col sm:flex-row gap-4 w-full justify-end">
+                                <select
+                                    value={genreFilter}
+                                    onChange={(e) => setGenreFilter(e.target.value)}
+                                    className="bg-black/50 border border-white/20 text-white px-4 py-3 font-mono text-sm uppercase focus:outline-none focus:border-white"
+                                >
+                                    {genres.map(g => (
+                                        <option key={g} value={g}>{g === 'all' ? 'All Genres' : g}</option>
+                                    ))}
+                                </select>
+
+                                <select
+                                    value={sortBy}
+                                    onChange={(e) => setSortBy(e.target.value)}
+                                    className="bg-black/50 border border-white/20 text-white px-4 py-3 font-mono text-sm uppercase focus:outline-none focus:border-white"
+                                >
+                                    <option value="rating-desc">Top Rated</option>
+                                    <option value="rate-asc">Rate: Low to High</option>
+                                    <option value="rate-desc">Rate: High to Low</option>
+                                </select>
+                            </div>
                         </div>
                     </div>
 

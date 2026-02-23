@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 const ContactUs: React.FC = () => {
     const [formData, setFormData] = useState({ name: '', email: '', message: '' });
@@ -123,6 +123,7 @@ const ContactUs: React.FC = () => {
 
                     </div>
                 </main>
+                <Footer />
             </div>
         </>
     );

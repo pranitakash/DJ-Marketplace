@@ -1,6 +1,6 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import Footer from '../components/Footer';
 
 const AboutUs: React.FC = () => {
     return (
@@ -48,6 +48,7 @@ const AboutUs: React.FC = () => {
                         </div>
                     </div>
                 </main>
+                <Footer />
             </div >
         </>
     );

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 interface NavbarProps {
@@ -9,9 +9,34 @@ interface NavbarProps {
 const Navbar: React.FC<NavbarProps> = ({ isTransparent = false }) => {
     const { user, logout } = useAuth();
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const [scrolled, setScrolled] = useState(false);
+    const location = useLocation();
+
+    React.useEffect(() => {
+        const handleScroll = () => {
+            if (window.scrollY > 50) {
+                setScrolled(true);
+            } else {
+                setScrolled(false);
+            }
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
 
     const baseHeaderClass = `fixed top-0 w-full z-50 flex items-center justify-between border-b border-white/10 px-6 lg:pl-20 lg:pr-10 py-5 transition-colors duration-300`;
-    const bgClass = isTransparent ? 'bg-transparent' : 'bg-background-dark/80 backdrop-blur-md';
+    const bgClass = isTransparent && !scrolled ? 'bg-transparent' : 'bg-background-dark/80 backdrop-blur-md';
+
+    const getLinkClass = (path: string) => {
+        const isActive = location.pathname === path;
+        return `transition-colors text-xs font-display uppercase tracking-widest relative group ${isActive ? 'text-white' : 'text-gray-400 hover:text-white'}`;
+    };
+
+    const getIndicatorClass = (path: string) => {
+        const isActive = location.pathname === path;
+        return `absolute -bottom-1 left-0 h-px transition-all duration-300 ${isActive ? 'w-full bg-white' : 'w-0 bg-white group-hover:w-full'}`;
+    };
 
     return (
         <>
@@ -24,17 +49,17 @@ const Navbar: React.FC<NavbarProps> = ({ isTransparent = false }) => {
                 {/* Desktop Menu */}
                 <div className="hidden md:flex flex-1 items-center justify-center">
                     <nav className="flex gap-12">
-                        <Link to="/about" className="text-gray-400 hover:text-white transition-colors text-xs font-display uppercase tracking-widest relative group">
+                        <Link to="/about" className={getLinkClass('/about')}>
                             About
-                            <span className="absolute -bottom-1 left-0 w-0 h-px bg-white transition-all duration-300 group-hover:w-full"></span>
+                            <span className={getIndicatorClass('/about')}></span>
                         </Link>
-                        <Link to="/how-it-works" className="text-gray-400 hover:text-white transition-colors text-xs font-display uppercase tracking-widest relative group">
+                        <Link to="/how-it-works" className={getLinkClass('/how-it-works')}>
                             How it Works
-                            <span className="absolute -bottom-1 left-0 w-0 h-px bg-white transition-all duration-300 group-hover:w-full"></span>
+                            <span className={getIndicatorClass('/how-it-works')}></span>
                         </Link>
-                        <Link to="/contact" className="text-gray-400 hover:text-white transition-colors text-xs font-display uppercase tracking-widest relative group">
+                        <Link to="/contact" className={getLinkClass('/contact')}>
                             Contact Us
-                            <span className="absolute -bottom-1 left-0 w-0 h-px bg-white transition-all duration-300 group-hover:w-full"></span>
+                            <span className={getIndicatorClass('/contact')}></span>
                         </Link>
                     </nav>
                 </div>
