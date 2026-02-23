@@ -10,6 +10,9 @@ import UserDashboard from './pages/dashboards/UserDashboard';
 import DJDashboard from './pages/dashboards/DJDashboard';
 import AdminDashboard from './pages/dashboards/AdminDashboard';
 import StaticPage from './pages/StaticPage';
+import AboutUs from './pages/AboutUs';
+import ContactUs from './pages/ContactUs';
+import HowItWorks from './pages/HowItWorks';
 
 const App: React.FC = () => {
   return (
@@ -29,11 +32,11 @@ const App: React.FC = () => {
           <Route path="/admin" element={<AdminDashboard />} />
 
           {/* Subpages / Static Pages */}
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/how-it-works" element={<HowItWorks />} />
+          <Route path="/contact" element={<ContactUs />} />
+
           <Route path="/journal" element={<StaticPage title="Journal" />} />
-          <Route path="/venues" element={<StaticPage title="Venues" />} />
-          <Route path="/events" element={<StaticPage title="Events" />} />
-          <Route path="/pricing" element={<StaticPage title="Pricing" />} />
-          <Route path="/contact" element={<StaticPage title="Contact" />} />
           <Route path="/privacy" element={<StaticPage title="Privacy Policy" />} />
           <Route path="/terms" element={<StaticPage title="Terms of Service" />} />
           <Route path="*" element={<Navigate to="/" />} />

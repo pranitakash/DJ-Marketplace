@@ -22,24 +22,36 @@ const Home: React.FC = () => {
             <h2 className="text-white text-lg font-display font-bold uppercase tracking-widest">DJ Night</h2>
           </div>
 
-          <div className="hidden md:flex items-center gap-12">
-            <nav className="flex gap-8">
-              <Link to="/explore" className="text-gray-400 hover:text-white transition-colors text-xs font-display uppercase tracking-widest">Directory</Link>
-              <Link to="/journal" className="text-gray-400 hover:text-white transition-colors text-xs font-display uppercase tracking-widest">Journal</Link>
-              <Link to="/explore" className="text-gray-400 hover:text-white transition-colors text-xs font-display uppercase tracking-widest">Access</Link>
+          <div className="hidden md:flex flex-1 items-center justify-center">
+            <nav className="flex gap-12">
+              <Link to="/about" className="text-gray-400 hover:text-white transition-colors text-xs font-display uppercase tracking-widest relative group">
+                About
+                <span className="absolute -bottom-1 left-0 w-0 h-px bg-white transition-all duration-300 group-hover:w-full"></span>
+              </Link>
+              <Link to="/how-it-works" className="text-gray-400 hover:text-white transition-colors text-xs font-display uppercase tracking-widest relative group">
+                How it Works
+                <span className="absolute -bottom-1 left-0 w-0 h-px bg-white transition-all duration-300 group-hover:w-full"></span>
+              </Link>
+              <Link to="/contact" className="text-gray-400 hover:text-white transition-colors text-xs font-display uppercase tracking-widest relative group">
+                Contact Us
+                <span className="absolute -bottom-1 left-0 w-0 h-px bg-white transition-all duration-300 group-hover:w-full"></span>
+              </Link>
             </nav>
+          </div>
+
+          <div className="hidden md:flex items-center gap-4">
             {user ? (
               <div className="flex items-center gap-4">
                 <span className="text-white text-xs font-display uppercase tracking-widest">{user.name}</span>
-                <button onClick={logout} className="border border-white/30 hover:bg-white hover:text-black hover:border-white transition-all duration-300 px-6 py-2 text-xs font-bold uppercase tracking-widest">
+                <button onClick={logout} className="border border-white/30 hover:bg-white hover:text-black hover:border-white transition-all duration-300 px-6 py-2 text-xs font-bold uppercase tracking-widest hover-butter">
                   Log Out
                 </button>
-                <Link to={`/dashboard/${user.role || 'user'}`} className="bg-white text-black border border-white hover:bg-transparent hover:text-white transition-all duration-300 px-6 py-2 text-xs font-bold uppercase tracking-widest">
+                <Link to={`/dashboard/${user.role || 'user'}`} className="bg-white text-black border border-white hover:bg-transparent hover:text-white transition-all duration-300 px-6 py-2 text-xs font-bold uppercase tracking-widest hover-butter">
                   Dashboard
                 </Link>
               </div>
             ) : (
-              <Link to="/login" className="border border-white/30 hover:bg-white hover:text-black hover:border-white transition-all duration-300 px-6 py-2 text-xs font-bold uppercase tracking-widest">
+              <Link to="/login" className="border border-white/30 hover:bg-white hover:text-black hover:border-white transition-all duration-300 px-6 py-2 text-xs font-bold uppercase tracking-widest hover-butter">
                 Log In
               </Link>
             )}
@@ -52,8 +64,9 @@ const Home: React.FC = () => {
 
         {/* Mobile Menu */}
         <div className={`fixed inset-0 bg-black/95 backdrop-blur-xl z-40 transition-transform duration-500 flex flex-col items-center justify-center gap-8 ${isMobileMenuOpen ? 'translate-x-0' : 'translate-x-full'} md:hidden`}>
-          <Link to="/explore" onClick={() => setIsMobileMenuOpen(false)} className="text-3xl font-display uppercase tracking-widest text-white hover:text-gray-400">Directory</Link>
-          <Link to="/journal" onClick={() => setIsMobileMenuOpen(false)} className="text-3xl font-display uppercase tracking-widest text-white hover:text-gray-400">Journal</Link>
+          <Link to="/about" onClick={() => setIsMobileMenuOpen(false)} className="text-3xl font-display uppercase tracking-widest text-white hover:text-gray-400">About</Link>
+          <Link to="/how-it-works" onClick={() => setIsMobileMenuOpen(false)} className="text-3xl font-display uppercase tracking-widest text-white hover:text-gray-400">How it Works</Link>
+          <Link to="/contact" onClick={() => setIsMobileMenuOpen(false)} className="text-3xl font-display uppercase tracking-widest text-white hover:text-gray-400">Contact Us</Link>
 
           {user ? (
             <div className="flex flex-col items-center gap-6 mt-8">
@@ -100,10 +113,10 @@ const Home: React.FC = () => {
                   [002] Connecting venues with sonic artists.
                 </p>
                 <div className="flex gap-4">
-                  <Link to="/explore" className="group relative overflow-hidden bg-white px-8 py-4 text-black transition-all hover:bg-gray-200">
+                  <Link to="/explore" className="group relative overflow-hidden bg-white px-8 py-4 text-black transition-all hover:bg-gray-200 hover-butter">
                     <span className="relative z-10 font-display font-bold uppercase tracking-widest text-xs">Book Talent</span>
                   </Link>
-                  <Link to="/signup" className="group relative overflow-hidden border border-white px-8 py-4 text-white transition-all hover:bg-white hover:text-black">
+                  <Link to="/signup" className="group relative overflow-hidden border border-white px-8 py-4 text-white transition-all hover:bg-white hover:text-black hover-butter">
                     <span className="relative z-10 font-display font-bold uppercase tracking-widest text-xs">Join Roster</span>
                   </Link>
                 </div>
@@ -157,7 +170,7 @@ const Home: React.FC = () => {
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10">
               {/* Artist Card 1 */}
-              <Link to="/explore" className="group relative aspect-[3/4] overflow-hidden bg-black block cursor-pointer">
+              <Link to="/explore" className="group relative aspect-[3/4] overflow-hidden bg-black block cursor-pointer hover-butter border border-transparent hover:border-white/20">
                 <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAHuwi1OBEG19lfsbI5Jww52LdyDiuRBk8fKyXHW12NjgGh211Vsnnz1RzWOU0f0lgj3s0R_F6GQCRVsvJnzZ2WOADQ0xQtI-nGaSJa7ainqmEjWOrsyfGN2YubxK0NYnMiCexrAuCOzOuq-lxcQobBL7BxOjKuXSx284_lNFudA_VBMotevMgo0mqRybbdjLO0cElp05z_-rbUGxGoaRSYq_sqCU6AFtf_m7Yj2S5lfvGXd-cPJEaIt_fPpHCjf5P_kIZ9EAMihMc")' }}></div>
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500"></div>
                 <div className="absolute inset-0 flex flex-col justify-between p-6 opacity-100 transition-opacity duration-300">
@@ -178,7 +191,7 @@ const Home: React.FC = () => {
               </Link>
 
               {/* Artist Card 2 */}
-              <Link to="/explore" className="group relative aspect-[3/4] overflow-hidden bg-black block cursor-pointer">
+              <Link to="/explore" className="group relative aspect-[3/4] overflow-hidden bg-black block cursor-pointer hover-butter border border-transparent hover:border-white/20">
                 <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAtTfCAokDmRpVmxug0R8vhH6t-R78GS5NRG4HlhjDKAADQ1VK9_aUG7cSccD4r7kcDh_RaWhLuHfRgbpCUTeFlNnqfKabEgG9hnDTsv2q6d7m9YTZL4dEcA0KFf0hdgVtyn1sslDFpR6KUkxhGAsGlEGuw5BwRjV6fCGlP9G_0R1yUmOmrndJI3Digq_lyGjd-BkNLlXEFDL0Q7qxz0FGC7kqpGHXX_aESfZmabH8xjNm3wc_BXhX7fUoFR6U2Rl_ESOr78P7hVuw")' }}></div>
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500"></div>
                 <div className="absolute inset-0 flex flex-col justify-between p-6 opacity-100 transition-opacity duration-300">
@@ -199,7 +212,7 @@ const Home: React.FC = () => {
               </Link>
 
               {/* Artist Card 3 */}
-              <Link to="/explore" className="group relative aspect-[3/4] overflow-hidden bg-black block cursor-pointer">
+              <Link to="/explore" className="group relative aspect-[3/4] overflow-hidden bg-black block cursor-pointer hover-butter border border-transparent hover:border-white/20">
                 <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAuvf3GnbjgmslXy54fNhrm3akAB-gR1ZhHt8Ok86N1nsJIQfx0h7nDMoIqfb-efGAEcWYatLv6ScklCA49hUTlvfsNWZWgn17D_loaBFjUbAwlifMhjC-iiFwS2rBdP2d_m2bYBEuJfJQgpSuMN2ynt3b9ioWKUgaT5SBYBFKaGJOVGjrB8QL7yKrlhJfjs_9sKTNVVmn_XgNiWfiNgFOJK3sT-P_yJzLFNjXZSZ5T5zctw5Z8qjljQLqvbuGFbQiUtpKol400gfg")' }}></div>
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500"></div>
                 <div className="absolute inset-0 flex flex-col justify-between p-6 opacity-100 transition-opacity duration-300">
@@ -220,7 +233,7 @@ const Home: React.FC = () => {
               </Link>
 
               {/* Artist Card 4 */}
-              <Link to="/explore" className="group relative aspect-[3/4] overflow-hidden bg-black block cursor-pointer">
+              <Link to="/explore" className="group relative aspect-[3/4] overflow-hidden bg-black block cursor-pointer hover-butter border border-transparent hover:border-white/20">
                 <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAeCitjeYDV5X9zJzuc2i-aLScgSBhQ_ewixST0zeHJ7W_CQYwGWAohf_Hc0nMt2spxKsCtmAYmSuy-XiB4JjEJOZZvSb87HHQtFyc3fVWnpJIFK5IqmqQNgaMNz3tV99GFVwUroRzm8KkFkrtw8545YI8OizSGg_ou4DhpTFWIf10aj3UiAObLIcVHkn43SmPCN-bqWmecPh-Bq7Awnk0FaAzY7U7kjcJ0DbviSLW62LQlDCfaHyt5lBXUdXj4Za8B4H22KMwXSvY")' }}></div>
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500"></div>
                 <div className="absolute inset-0 flex flex-col justify-between p-6 opacity-100 transition-opacity duration-300">
@@ -257,7 +270,7 @@ const Home: React.FC = () => {
                 </div>
 
                 <div className="space-y-8">
-                  <div className="group flex gap-6 items-start hover:bg-white/5 p-4 -mx-4 rounded transition-colors cursor-default">
+                  <div className="group flex gap-6 items-start glass-card hover-butter p-6 -mx-4 rounded cursor-default min-h-[140px]">
                     <span className="font-mono text-xs text-white border border-white/30 size-8 flex items-center justify-center rounded-full flex-shrink-0 group-hover:bg-white group-hover:text-black transition-colors">01</span>
                     <div>
                       <h3 className="text-xl font-display font-bold uppercase mb-1">Discovery Phase</h3>
@@ -265,7 +278,7 @@ const Home: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="group flex gap-6 items-start hover:bg-white/5 p-4 -mx-4 rounded transition-colors cursor-default">
+                  <div className="group flex gap-6 items-start glass-card hover-butter p-6 -mx-4 rounded cursor-default min-h-[140px]">
                     <span className="font-mono text-xs text-white border border-white/30 size-8 flex items-center justify-center rounded-full flex-shrink-0 group-hover:bg-white group-hover:text-black transition-colors">02</span>
                     <div>
                       <h3 className="text-xl font-display font-bold uppercase mb-1">Execution Contract</h3>
@@ -273,7 +286,7 @@ const Home: React.FC = () => {
                     </div>
                   </div>
 
-                  <div className="group flex gap-6 items-start hover:bg-white/5 p-4 -mx-4 rounded transition-colors cursor-default">
+                  <div className="group flex gap-6 items-start glass-card hover-butter p-6 -mx-4 rounded cursor-default min-h-[140px]">
                     <span className="font-mono text-xs text-white border border-white/30 size-8 flex items-center justify-center rounded-full flex-shrink-0 group-hover:bg-white group-hover:text-black transition-colors">03</span>
                     <div>
                       <h3 className="text-xl font-display font-bold uppercase mb-1">Live Interface</h3>

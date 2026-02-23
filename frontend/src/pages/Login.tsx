@@ -21,7 +21,16 @@ const Login: React.FC = () => {
       const response = await api.post('/auth/login', { email, password });
       const { user, token } = response.data;
       login(user, token);
-      navigate('/');
+
+      // Role-based Redirect Logic
+      if (user.role === 'admin') {
+        navigate('/dashboard/admin');
+      } else if (user.role === 'dj') {
+        navigate('/dashboard/dj');
+      } else {
+        navigate('/explore');
+      }
+
     } catch (err: any) {
       setError(err.response?.data?.message || 'Invalid email or password');
     } finally {
