@@ -65,7 +65,7 @@ graph TD
 
 ## 🚀 Deployment & Setup
 
-### 1. Repository Initializaiton
+### 1. Repository Initialization
 ```bash
 git clone https://github.com/NITESH-DANGI/DJ-night.git
 cd DJ-night/backend
