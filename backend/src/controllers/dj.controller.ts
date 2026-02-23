@@ -26,7 +26,7 @@ export const getAllDJs = async (req: Request, res: Response) => {
             lastDocId?: string;
         }
 
-        let query: any = db.collection("djs").orderBy("createdAt").limit(Number(limit))
+        let query: any = db.collection("djs").orderBy("createdAt", "desc").limit(Number(limit))
 
         if (location) {
             query = query.where("location", "==", location)
