@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
 import { db } from "../config/firebase.js";
-import { messaging } from "firebase-admin";
-
 export const registerUser = async (req: Request, res: Response) => {
   try {
     const { uid, email, name, role } = req.body

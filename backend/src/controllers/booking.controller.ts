@@ -1,26 +1,36 @@
 import { Request, Response } from "express";
 import { db } from "../config/firebase.js";
-
+import { getIO } from "../socket.js";
+import { Timestamp } from "firebase-admin/firestore";
 export const createBooking = async (req: Request, res: Response) => {
   try {
     const booking = req.body;
-
+    
     if (!booking) {
       return res.status(400).json({ message: "Booking is required" })
     }
+    const io = getIO();
 
     const docRef = await db.collection("bookings").add({
       ...booking,
       status: "pending",
-      createdAt: new Date(),
+      isVerified: false,
+      createdAt: Timestamp.now(),
     });
-    if (!docRef) {
-      return res.status(500).json({ message: "Error creating booking" })
-    }
+
+    io.to(`dj_${booking.djId}`).emit("new_booking", {
+      bookingId: docRef.id,
+      ...booking,
+    })
+
+    io.to(`user_${booking.userId}`).emit("booking_created", {
+      bookingId: docRef.id,
+      ...booking,
+    })
 
     res.status(201).json({
       id: docRef.id,
-      message: "Booking created",
+      message: "Booking created successfully",
     });
   } catch (error) {
     res.status(500).json({ message: "Error creating booking" });
@@ -31,6 +41,7 @@ export const updateBookingStatus = async (req: Request, res: Response) => {
   try {
     const { bookingId } = req.params as { bookingId: string };
     const { status } = req.body as { status: string };
+    const io = getIO();
 
     if (!bookingId) {
       return res.status(400).json({ message: "Booking ID is required" })
@@ -40,11 +51,34 @@ export const updateBookingStatus = async (req: Request, res: Response) => {
       return res.status(400).json({ message: "Status is required" })
     }
 
-    await db.collection("bookings").doc(bookingId).update({
+    const allowedStatuses = ["pending", "confirmed", "completed", "cancelled"];
+
+    if (!allowedStatuses.includes(status)) {
+      return res.status(400).json({ message: "Invalid status value" });
+    }
+
+    const bookingRef = db.collection("bookings").doc(bookingId);
+    const bookingDoc = await bookingRef.get();
+
+    if (!bookingDoc.exists) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    const bookingData = bookingDoc.data();
+
+    await bookingRef.update({ status });
+
+    io.to(`dj_${bookingData?.djId}`).emit("booking_updated", {
+      bookingId,
       status,
     });
 
-    res.json({ message: "Booking updated successfully" });
+    io.to(`user_${bookingData?.userId}`).emit("booking_updated", {
+      bookingId,
+      status,
+    });
+
+    return res.json({ message: "Booking updated successfully" });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Error updating booking" });
