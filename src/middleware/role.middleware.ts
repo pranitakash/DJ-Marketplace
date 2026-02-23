@@ -4,7 +4,11 @@ import { db } from "../config/firebase.js";
 export const requireRole = (role: "user" | "dj") => {
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
-            const uid = (req as any).user.uid;
+            const uid = req.user?.uid;
+
+            if (!uid) {
+                return res.status(401).json({ message: "Unauthorized" })
+            }
 
             const userDoc = await db.collection("users").doc(uid).get();
 

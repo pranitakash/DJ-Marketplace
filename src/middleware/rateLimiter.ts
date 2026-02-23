@@ -12,12 +12,12 @@ export const globalLimiter = rateLimit({
 });
 
 export const authLimiter = rateLimit({
-    windowMs: 60 * 60 * 1000,
-    max: 5,
+    windowMs: 15 * 60 * 1000, 
+    max: 50, 
     standardHeaders: true,
     legacyHeaders: false,
     message: {
         status: 429,
-        message: "Too many login attempts from this IP, please try again after an hour",
+        message: "Too many auth attempts from this IP, please try again after 15 minutes",
     },
 });
