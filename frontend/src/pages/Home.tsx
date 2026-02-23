@@ -37,7 +37,7 @@ const Home: React.FC = () => {
         <main className="flex-grow pl-0 lg:pl-20">
           <section className="relative h-screen w-full flex items-center justify-center overflow-hidden border-b border-white/10">
             <div className="absolute inset-0 z-0 opacity-40">
-              <div className="absolute inset-0 bg-cover bg-center grayscale contrast-125 brightness-75 vinyl-spin scale-150" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1571266028243-3716f02d2d2e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80")' }}></div>
+              <div className="absolute inset-0 bg-cover bg-center grayscale contrast-125 brightness-75 vinyl-spin scale-150" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuArPXG1tpqrMtX70DeVHYVINIG9GThEbyFnVffUddO5NmpKlfn6_sS0m2blKoe15Rdgyypc-MnOSt1t-U2JZ-wjJgTdQ11DpEMcErKFcRJA96QiwSDhT5yeTwA2EYqhJBRmB3xFXvRl2jkbzwSGyeRmC0L8PrPdT8Dm-Lkq1zUk0zyASAK-ub38HYJTpVwNHemur55BOkPexFSTV1tX8oFdZqjjHkNLSVjXEI4cIoLsirnBEiNXAJtjVZ-ZV7sxcJso5ZSKXvZu5uA")' }}></div>
             </div>
 
             <motion.div
@@ -120,7 +120,7 @@ const Home: React.FC = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10">
               {/* Artist Card 1 */}
               <Link to="/explore" className="group relative aspect-[3/4] overflow-hidden bg-black block cursor-pointer hover-butter border border-transparent hover:border-white/20">
-                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1514525253161-7a46d19cd819?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80")' }}></div>
+                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAHuwi1OBEG19lfsbI5Jww52LdyDiuRBk8fKyXHW12NjgGh211Vsnnz1RzWOU0f0lgj3s0R_F6GQCRVsvJnzZ2WOADQ0xQtI-nGaSJa7ainqmEjWOrsyfGN2YubxK0NYnMiCexrAuCOzOuq-lxcQobBL7BxOjKuXSx284_lNFudA_VBMotevMgo0mqRybbdjLO0cElp05z_-rbUGxGoaRSYq_sqCU6AFtf_m7Yj2S5lfvGXd-cPJEaIt_fPpHCjf5P_kIZ9EAMihMc")' }}></div>
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500"></div>
                 <div className="absolute inset-0 flex flex-col justify-between p-6 opacity-100 transition-opacity duration-300">
                   <div className="flex justify-between items-start">
@@ -141,7 +141,7 @@ const Home: React.FC = () => {
 
               {/* Artist Card 2 */}
               <Link to="/explore" className="group relative aspect-[3/4] overflow-hidden bg-black block cursor-pointer hover-butter border border-transparent hover:border-white/20">
-                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1574169208538-4f45163ade8d?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80")' }}></div>
+                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAtTfCAokDmRpVmxug0R8vhH6t-R78GS5NRG4HlhjDKAADQ1VK9_aUG7cSccD4r7kcDh_RaWhLuHfRgbpCUTeFlNnqfKabEgG9hnDTsv2q6d7m9YTZL4dEcA0KFf0hdgVtyn1sslDFpR6KUkxhGAsGlEGuw5BwRjV6fCGlP9G_0R1yUmOmrndJI3Digq_lyGjd-BkNLlXEFDL0Q7qxz0FGC7kqpGHXX_aESfZmabH8xjNm3wc_BXhX7fUoFR6U2Rl_ESOr78P7hVuw")' }}></div>
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500"></div>
                 <div className="absolute inset-0 flex flex-col justify-between p-6 opacity-100 transition-opacity duration-300">
                   <div className="flex justify-between items-start">
@@ -162,7 +162,7 @@ const Home: React.FC = () => {
 
               {/* Artist Card 3 */}
               <Link to="/explore" className="group relative aspect-[3/4] overflow-hidden bg-black block cursor-pointer hover-butter border border-transparent hover:border-white/20">
-                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80")' }}></div>
+                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAuvf3GnbjgmslXy54fNhrm3akAB-gR1ZhHt8Ok86N1nsJIQfx0h7nDMoIqfb-efGAEcWYatLv6ScklCA49hUTlvfsNWZWgn17D_loaBFjUbAwlifMhjC-iiFwS2rBdP2d_m2bYBEuJfJQgpSuMN2ynt3b9ioWKUgaT5SBYBFKaGJOVGjrB8QL7yKrlhJfjs_9sKTNVVmn_XgNiWfiNgFOJK3sT-P_yJzLFNjXZSZ5T5zctw5Z8qjljQLqvbuGFbQiUtpKol400gfg")' }}></div>
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500"></div>
                 <div className="absolute inset-0 flex flex-col justify-between p-6 opacity-100 transition-opacity duration-300">
                   <div className="flex justify-between items-start">
@@ -183,7 +183,7 @@ const Home: React.FC = () => {
 
               {/* Artist Card 4 */}
               <Link to="/explore" className="group relative aspect-[3/4] overflow-hidden bg-black block cursor-pointer hover-butter border border-transparent hover:border-white/20">
-                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1598387181032-a3103a2db5b3?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80")' }}></div>
+                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAeCitjeYDV5X9zJzuc2i-aLScgSBhQ_ewixST0zeHJ7W_CQYwGWAohf_Hc0nMt2spxKsCtmAYmSuy-XiB4JjEJOZZySb87HHQtFyc3fVWnpJIFK5IqmqQNgaMNz3tV99GFVwUroRzm8KkFkrtw8545I8OizSGg_ou4DhpTFWIf10aj3UiAObLIcVHkn43SmPCN-bqWmecPh-Bq7Awnk0FaAzY7U7kjcJ0DbviSLW62LQlDCfaHyt5lBXUdXj4Za8B4H22KMwXSvY")' }}></div>
                 <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500"></div>
                 <div className="absolute inset-0 flex flex-col justify-between p-6 opacity-100 transition-opacity duration-300">
                   <div className="flex justify-between items-start">
@@ -247,7 +247,7 @@ const Home: React.FC = () => {
 
               <div className="relative h-[600px] border border-white/10 p-2">
                 <div className="h-full w-full relative overflow-hidden bg-[#111]">
-                  <div className="absolute inset-0 bg-cover bg-center grayscale contrast-125" style={{ backgroundImage: 'url("https://images.unsplash.com/photo-1574169208507-84376144848b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80")' }}></div>
+                  <div className="absolute inset-0 bg-cover bg-center grayscale contrast-125" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAB8HHQXY76XplmpfU7xUXHwmE-ID5EbFvbxFD4jgQxOJE7x5xUcqi_5AfHzxVrr29Y2DVuj4bQkQQbM2qsGME3lV0OoCHtRlKHGov-JO58CTBzDufSi74MoPOFcUxVyZF1fLoAkh88L972POL6o_a41YXnB3EjTi4xGHiC6oJtOK2y_8F8XvXZ2iZbY6K33APfFYt1UhpeF2uMK59NDhgTzWQnzPLCUSUQSwULlosLhJR54DkYOIPCNHbyW4xoWDCuO9gDbIKIKC8")' }}></div>
                   <div className="absolute top-4 left-4 border border-white/30 bg-black/50 backdrop-blur px-3 py-1">
                     <span className="font-mono text-[10px] text-white uppercase tracking-widest">● LIVE SIGNAL</span>
                   </div>

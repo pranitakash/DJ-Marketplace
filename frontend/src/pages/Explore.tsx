@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
+import { motion, AnimatePresence } from 'framer-motion';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 
@@ -13,6 +14,65 @@ interface DJ {
     imageUrl?: string;
     bio?: string;
 }
+
+const CustomDropdown: React.FC<{
+    value: string;
+    options: { value: string; label: string }[];
+    onChange: (val: string) => void;
+    placeholder?: string;
+}> = ({ value, options, onChange, placeholder }) => {
+    const [isOpen, setIsOpen] = useState(false);
+    const dropdownRef = useRef<HTMLDivElement>(null);
+    const selectedLabel = options.find(o => o.value === value)?.label || placeholder || value;
+
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsOpen(false);
+            }
+        };
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, []);
+
+    return (
+        <div className="relative w-full sm:w-48 z-20 font-mono" ref={dropdownRef}>
+            <button
+                type="button"
+                onClick={() => setIsOpen(!isOpen)}
+                className="w-full flex items-center justify-between bg-black/50 border border-white/20 text-white px-4 py-3 text-sm uppercase focus:outline-none hover:border-white transition-colors text-left"
+            >
+                <span className="truncate">{selectedLabel}</span>
+                <span className="material-symbols-outlined text-[1rem] opacity-70 transition-transform duration-300" style={{ transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)' }}>
+                    expand_more
+                </span>
+            </button>
+            <AnimatePresence>
+                {isOpen && (
+                    <motion.div
+                        initial={{ opacity: 0, y: -5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -5 }}
+                        transition={{ duration: 0.2 }}
+                        className="absolute top-full left-0 mt-1 w-full bg-black/90 backdrop-blur-md border border-white/20 shadow-2xl overflow-hidden max-h-60 overflow-y-auto z-50 rounded-sm custom-scrollbar"
+                    >
+                        {options.map((opt) => (
+                            <button
+                                key={opt.value}
+                                type="button"
+                                onClick={() => { onChange(opt.value); setIsOpen(false); }}
+                                className={`w-full text-left px-4 py-3 text-sm uppercase transition-colors ${value === opt.value ? 'bg-white/20 text-white' : 'text-gray-400 hover:bg-white/10 hover:text-white'
+                                    }`}
+                            >
+                                {opt.label}
+                            </button>
+                        ))}
+                    </motion.div>
+                )}
+            </AnimatePresence>
+        </div>
+    );
+};
 
 const Explore: React.FC = () => {
     const [djs, setDjs] = useState<DJ[]>([]);
@@ -139,25 +199,25 @@ const Explore: React.FC = () => {
                             </div>
 
                             <div className="flex flex-col sm:flex-row gap-4 w-full justify-end">
-                                <select
+                                <CustomDropdown
                                     value={genreFilter}
-                                    onChange={(e) => setGenreFilter(e.target.value)}
-                                    className="bg-black/50 border border-white/20 text-white px-4 py-3 font-mono text-sm uppercase focus:outline-none focus:border-white"
-                                >
-                                    {genres.map(g => (
-                                        <option key={g} value={g}>{g === 'all' ? 'All Genres' : g}</option>
-                                    ))}
-                                </select>
+                                    onChange={setGenreFilter}
+                                    placeholder="All Genres"
+                                    options={[
+                                        { value: 'all', label: 'All Genres' },
+                                        ...genres.filter(g => g !== 'all').map(g => ({ value: g, label: g }))
+                                    ]}
+                                />
 
-                                <select
+                                <CustomDropdown
                                     value={sortBy}
-                                    onChange={(e) => setSortBy(e.target.value)}
-                                    className="bg-black/50 border border-white/20 text-white px-4 py-3 font-mono text-sm uppercase focus:outline-none focus:border-white"
-                                >
-                                    <option value="rating-desc">Top Rated</option>
-                                    <option value="rate-asc">Rate: Low to High</option>
-                                    <option value="rate-desc">Rate: High to Low</option>
-                                </select>
+                                    onChange={setSortBy}
+                                    options={[
+                                        { value: 'rating-desc', label: 'Top Rated' },
+                                        { value: 'rate-asc', label: 'Rate: Low to High' },
+                                        { value: 'rate-desc', label: 'Rate: High to Low' },
+                                    ]}
+                                />
                             </div>
                         </div>
                     </div>

@@ -85,19 +85,19 @@ const Footer: React.FC = () => {
                     <div>
                         <h4 className="font-mono text-xs text-gray-500 uppercase mb-6">Directory</h4>
                         <ul className="space-y-4 font-display uppercase tracking-wider text-sm text-gray-400">
-                            <li><button onClick={() => setActiveModal('artists')} className="hover:text-white transition-colors">Artists</button></li>
-                            <li><button onClick={() => setActiveModal('venues')} className="hover:text-white transition-colors">Venues</button></li>
-                            <li><button onClick={() => setActiveModal('events')} className="hover:text-white transition-colors">Events</button></li>
-                            <li><button onClick={() => setActiveModal('pricing')} className="text-yellow-500 hover:text-yellow-400 font-bold transition-colors">Pricing</button></li>
+                            <li><button onClick={() => setActiveModal('artists')} className="hover:text-white transition-colors">ARTISTS</button></li>
+                            <li><button onClick={() => setActiveModal('venues')} className="hover:text-white transition-colors">VENUES</button></li>
+                            <li><button onClick={() => setActiveModal('events')} className="hover:text-white transition-colors">EVENTS</button></li>
+                            <li><button onClick={() => setActiveModal('pricing')} className="hover:text-white transition-colors">PRICING</button></li>
                         </ul>
                     </div>
 
                     <div>
                         <h4 className="font-mono text-xs text-gray-500 uppercase mb-6">Connect</h4>
                         <ul className="space-y-4 font-display uppercase tracking-wider text-sm text-gray-400">
-                            <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Instagram</a></li>
-                            <li><a href="https://soundcloud.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">SoundCloud</a></li>
-                            <li><Link to="/contact" className="hover:text-white transition-colors">Contact</Link></li>
+                            <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">INSTAGRAM</a></li>
+                            <li><a href="https://soundcloud.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">SOUNDCLOUD</a></li>
+                            <li><Link to="/contact" className="hover:text-white transition-colors">CONTACT</Link></li>
                         </ul>
                     </div>
                 </div>
