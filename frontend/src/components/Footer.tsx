@@ -4,8 +4,19 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 const Footer: React.FC = () => {
     const [activeModal, setActiveModal] = useState<string | null>(null);
+    const [subscribeStatus, setSubscribeStatus] = useState<'idle' | 'success'>('idle');
+    const [email, setEmail] = useState('');
 
     const closeModal = () => setActiveModal(null);
+
+    const handleSubscribe = (e: React.FormEvent) => {
+        e.preventDefault();
+        if (email) {
+            setSubscribeStatus('success');
+            setEmail('');
+            setTimeout(() => setSubscribeStatus('idle'), 5000);
+        }
+    };
 
     const modalContent: Record<string, { title: string, content: React.ReactNode }> = {
         artists: {
@@ -46,28 +57,47 @@ const Footer: React.FC = () => {
                 <div className="px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20 max-w-7xl mx-auto">
                     <div className="col-span-1 md:col-span-2">
                         <h2 className="text-5xl font-display font-bold uppercase mb-6 tracking-tight">Stay Tuned</h2>
-                        <div className="flex border-b border-white pb-2 max-w-md">
-                            <input className="bg-transparent border-none w-full text-white placeholder-gray-500 focus:outline-none px-0 font-mono text-sm uppercase" placeholder="ENTER YOUR EMAIL" type="email" />
-                            <button className="font-display font-bold uppercase text-sm hover:text-gray-300">Subscribe</button>
-                        </div>
+                        <form onSubmit={handleSubscribe} className="flex border-b border-white pb-2 max-w-md relative">
+                            <input
+                                className="bg-transparent border-none w-full text-white placeholder-gray-500 focus:outline-none px-0 font-mono text-sm uppercase"
+                                placeholder="ENTER YOUR EMAIL"
+                                type="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                            />
+                            <button type="submit" className="font-display font-bold uppercase text-sm hover:text-gray-300">Subscribe</button>
+                            <AnimatePresence>
+                                {subscribeStatus === 'success' && (
+                                    <motion.p
+                                        initial={{ opacity: 0, y: -10 }}
+                                        animate={{ opacity: 1, y: 0 }}
+                                        exit={{ opacity: 0, y: -10 }}
+                                        className="absolute -bottom-8 left-0 text-xs font-mono text-[#00ffcc] uppercase tracking-widest"
+                                    >
+                                        You'll receive an email shortly
+                                    </motion.p>
+                                )}
+                            </AnimatePresence>
+                        </form>
                     </div>
 
                     <div>
                         <h4 className="font-mono text-xs text-gray-500 uppercase mb-6">Directory</h4>
-                        <ul className="space-y-2 font-display uppercase tracking-wider text-sm">
-                            <li><button onClick={() => setActiveModal('artists')} className="hover:text-gray-400 transition-colors">Artists</button></li>
-                            <li><button onClick={() => setActiveModal('venues')} className="hover:text-gray-400 transition-colors">Venues</button></li>
-                            <li><button onClick={() => setActiveModal('events')} className="hover:text-gray-400 transition-colors">Events</button></li>
-                            <li><button onClick={() => setActiveModal('pricing')} className="hover:text-gray-400 transition-colors text-yellow-500 font-bold">Pricing</button></li>
+                        <ul className="space-y-4 font-display uppercase tracking-wider text-sm text-gray-400">
+                            <li><button onClick={() => setActiveModal('artists')} className="hover:text-white transition-colors">Artists</button></li>
+                            <li><button onClick={() => setActiveModal('venues')} className="hover:text-white transition-colors">Venues</button></li>
+                            <li><button onClick={() => setActiveModal('events')} className="hover:text-white transition-colors">Events</button></li>
+                            <li><button onClick={() => setActiveModal('pricing')} className="text-yellow-500 hover:text-yellow-400 font-bold transition-colors">Pricing</button></li>
                         </ul>
                     </div>
 
                     <div>
                         <h4 className="font-mono text-xs text-gray-500 uppercase mb-6">Connect</h4>
-                        <ul className="space-y-2 font-display uppercase tracking-wider text-sm">
-                            <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400 transition-colors">Instagram</a></li>
-                            <li><a href="https://soundcloud.com" target="_blank" rel="noopener noreferrer" className="hover:text-gray-400 transition-colors">SoundCloud</a></li>
-                            <li><Link to="/contact" className="hover:text-gray-400 transition-colors">Contact</Link></li>
+                        <ul className="space-y-4 font-display uppercase tracking-wider text-sm text-gray-400">
+                            <li><a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">Instagram</a></li>
+                            <li><a href="https://soundcloud.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">SoundCloud</a></li>
+                            <li><Link to="/contact" className="hover:text-white transition-colors">Contact</Link></li>
                         </ul>
                     </div>
                 </div>
