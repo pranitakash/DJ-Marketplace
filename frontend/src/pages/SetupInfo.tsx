@@ -12,7 +12,8 @@ const SetupInfo: React.FC = () => {
     const [djData, setDjData] = useState({
         genre: '',
         hourlyRate: '',
-        bio: ''
+        bio: '',
+        imageUrl: ''
     });
 
     const [userData, setUserData] = useState({
@@ -48,7 +49,8 @@ const SetupInfo: React.FC = () => {
                 await api.post('/djs', {
                     genre: djData.genre,
                     hourlyRate: Number(djData.hourlyRate) || 0,
-                    bio: djData.bio
+                    bio: djData.bio,
+                    imageUrl: djData.imageUrl
                 });
             } else {
                 // Mock endpoint or skip if no user profile endpoint exists
@@ -118,6 +120,38 @@ const SetupInfo: React.FC = () => {
                                         onChange={(e) => setDjData({ ...djData, hourlyRate: e.target.value })}
                                         className="w-full bg-black/50 border border-white/20 text-white px-4 py-3 font-mono text-sm uppercase focus:outline-none focus:border-white transition-all placeholder:text-gray-600"
                                     />
+                                </div>
+                                <div className="space-y-2">
+                                    <label className="block text-xs font-display uppercase tracking-widest text-gray-400">Profile Image</label>
+                                    <div className="flex items-center gap-4">
+                                        {djData.imageUrl && (
+                                            <div className="size-16 rounded-full border border-white/20 overflow-hidden shrink-0">
+                                                <img src={djData.imageUrl.startsWith('/') ? `${api.defaults.baseURL?.replace('/api', '')}${djData.imageUrl}` : djData.imageUrl} alt="Profile preview" className="w-full h-full object-cover" />
+                                            </div>
+                                        )}
+                                        <input
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={async (e) => {
+                                                const file = e.target.files?.[0];
+                                                if (!file) return;
+                                                setLoading(true);
+                                                try {
+                                                    const formData = new FormData();
+                                                    formData.append('image', file);
+                                                    const res = await api.post('/upload', formData, {
+                                                        headers: { 'Content-Type': 'multipart/form-data' }
+                                                    });
+                                                    setDjData({ ...djData, imageUrl: res.data.url });
+                                                } catch (err) {
+                                                    console.error('Failed to upload image.', err);
+                                                } finally {
+                                                    setLoading(false);
+                                                }
+                                            }}
+                                            className="w-full bg-black/50 border border-white/20 text-white px-4 py-3 font-mono text-sm focus:outline-none focus:border-white transition-all file:mr-4 file:py-2 file:px-4 file:rounded-none file:border-0 file:text-xs file:font-mono file:uppercase file:bg-white file:text-black hover:file:bg-gray-200"
+                                        />
+                                    </div>
                                 </div>
                                 <div className="space-y-2">
                                     <label className="block text-xs font-display uppercase tracking-widest text-gray-400">Sonic Manifesto [Bio]</label>

@@ -18,7 +18,12 @@ import SetupInfo from './pages/SetupInfo';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode, allowedRoles?: string[] }) => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  if (loading) return (
+    <div className="min-h-screen bg-background-dark flex items-center justify-center">
+      <div className="size-8 bg-white rounded-full animate-ping"></div>
+    </div>
+  );
   if (!user) return <Navigate to="/login" replace />;
   if (allowedRoles && !allowedRoles.includes(user.role)) return <Navigate to="/" replace />;
   return <>{children}</>;
