@@ -5,6 +5,7 @@ import { Timestamp } from "firebase-admin/firestore";
 export const createBooking = async (req: Request, res: Response) => {
   try {
     const booking = req.body;
+    booking.userId = req.user?.uid;
 
     if (!booking || !booking.djId || !booking.userId) {
       return res.status(400).json({ message: "Booking details (djId, userId) are required" })
