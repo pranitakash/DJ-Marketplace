@@ -23,7 +23,7 @@ const SetupInfo: React.FC = () => {
     useEffect(() => {
         if (!user) {
             navigate('/login');
-        } else if (localStorage.getItem(`setupComplete_${user._id || user.id}`)) {
+        } else if (localStorage.getItem(`setupComplete_${user.uid}`)) {
             // Already setup, skip
             redirectUser();
         }
@@ -36,7 +36,7 @@ const SetupInfo: React.FC = () => {
     };
 
     const handleSkip = () => {
-        localStorage.setItem(`setupComplete_${user?._id || user?.id}`, 'true');
+        localStorage.setItem(`setupComplete_${user?.uid}`, 'true');
         redirectUser();
     };
 
@@ -54,12 +54,12 @@ const SetupInfo: React.FC = () => {
                 // Mock endpoint or skip if no user profile endpoint exists
                 // We just want to mark setup as complete
             }
-            localStorage.setItem(`setupComplete_${user?._id || user?.id}`, 'true');
+            localStorage.setItem(`setupComplete_${user?.uid}`, 'true');
             redirectUser();
         } catch (error) {
             console.error('Setup failed', error);
             // Even if it fails (e.g. DJ profile already exists), let them pass
-            localStorage.setItem(`setupComplete_${user?._id || user?.id}`, 'true');
+            localStorage.setItem(`setupComplete_${user?.uid}`, 'true');
             redirectUser();
         } finally {
             setLoading(false);

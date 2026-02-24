@@ -26,7 +26,7 @@ const Login: React.FC = () => {
       if (user.role === 'admin') {
         navigate('/dashboard/admin');
       } else {
-        const isSetup = localStorage.getItem(`setupComplete_${user._id || user.id}`);
+        const isSetup = localStorage.getItem(`setupComplete_${user.uid}`);
         if (isSetup) {
           navigate(user.role === 'dj' ? '/dashboard/dj' : '/explore');
         } else {

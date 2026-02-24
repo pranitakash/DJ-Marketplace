@@ -276,6 +276,7 @@ const DJProfile: React.FC = () => {
                                                 className="w-full bg-black/50 border border-white/20 text-white px-4 py-3 font-mono text-sm uppercase focus:outline-none focus:border-white transition-all hover:bg-white/5"
                                                 placeholderText="SELECT DATE..."
                                                 dateFormat="yyyy/MM/dd"
+                                                portalId="root-portal"
                                                 required
                                             />
                                         </div>
