@@ -14,10 +14,16 @@ import StaticPage from './pages/StaticPage';
 import AboutUs from './pages/AboutUs';
 import ContactUs from './pages/ContactUs';
 import HowItWorks from './pages/HowItWorks';
+import SetupInfo from './pages/SetupInfo';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode, allowedRoles?: string[] }) => {
-  const { user } = useAuth();
+  const { user, loading } = useAuth();
+  if (loading) return (
+    <div className="min-h-screen bg-background-dark flex items-center justify-center">
+      <div className="size-8 bg-white rounded-full animate-ping"></div>
+    </div>
+  );
   if (!user) return <Navigate to="/login" replace />;
   if (allowedRoles && !allowedRoles.includes(user.role)) return <Navigate to="/" replace />;
   return <>{children}</>;
@@ -38,6 +44,7 @@ const AnimatedRoutes = () => {
         {/* Protected Marketplace Route */}
         <Route path="/explore" element={<ProtectedRoute><PageTransition><Explore /></PageTransition></ProtectedRoute>} />
         <Route path="/dj/:id" element={<ProtectedRoute><PageTransition><DJProfile /></PageTransition></ProtectedRoute>} />
+        <Route path="/setup-info" element={<ProtectedRoute><PageTransition><SetupInfo /></PageTransition></ProtectedRoute>} />
 
         {/* Protected Dashboard Routes */}
         <Route path="/dashboard/user" element={<ProtectedRoute allowedRoles={['user', 'admin']}><PageTransition><UserDashboard /></PageTransition></ProtectedRoute>} />

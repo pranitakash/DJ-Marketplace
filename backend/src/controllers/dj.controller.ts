@@ -3,16 +3,57 @@ import { db } from "../config/firebase.js";
 
 export const createDJ = async (req: Request, res: Response) => {
     try {
-        const data = req.body
+        const data = req.body;
+        const uid = req.user?.uid;
 
-        const docRef = await db.collection("djs").add({
-            ...data, createdAt: new Date(),
-        })
+        if (!uid) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
 
-        res.status(201).json({ message: "DJ created successfully", id: docRef.id })
+        const djRef = db.collection("djs").doc(uid);
+        const djDoc = await djRef.get();
+
+        const updateData: any = {
+            ...data,
+            id: uid, // ensure the id is part of the data
+            updatedAt: new Date(),
+        };
+
+        if (!djDoc.exists) {
+            updateData.createdAt = new Date();
+        }
+
+        await djRef.set(updateData, { merge: true });
+
+        // Best approach is just to ensure it upserts nicely.
+        const doc = await djRef.get();
+
+        res.status(200).json({ message: "DJ profile updated successfully", id: uid, data: { id: uid, ...doc.data() } });
 
     } catch (error) {
-        res.status(500).json({ message: "Error creating DJ" });
+        console.log("Error updating DJ:", error);
+        res.status(500).json({ message: "Error updating DJ profile" });
+    }
+}
+
+export const getDJProfile = async (req: Request, res: Response) => {
+    try {
+        const uid = req.user?.uid;
+
+        if (!uid) {
+            return res.status(401).json({ message: "Unauthorized" });
+        }
+
+        const doc = await db.collection("djs").doc(uid).get();
+
+        if (!doc.exists) {
+            return res.status(404).json({ message: "DJ profile not found" });
+        }
+
+        return res.status(200).json({ data: { id: doc.id, ...doc.data() } });
+    } catch (error) {
+        console.log("Error fetching DJ profile:", error);
+        return res.status(500).json({ message: "Error fetching DJ profile" });
     }
 }
 
@@ -68,7 +109,7 @@ export const getAllDJs = async (req: Request, res: Response) => {
 export const getDJById = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const doc = await db.collection("djs").doc(id).get();
+        const doc = await db.collection("djs").doc(id as string).get();
 
         if (!doc.exists) {
             return res.status(404).json({ message: "DJ not found" });
