@@ -65,6 +65,22 @@ export const getAllDJs = async (req: Request, res: Response) => {
     }
 }
 
+export const getDJById = async (req: Request, res: Response) => {
+    try {
+        const { id } = req.params;
+        const doc = await db.collection("djs").doc(id).get();
+
+        if (!doc.exists) {
+            return res.status(404).json({ message: "DJ not found" });
+        }
+
+        return res.status(200).json({ data: { id: doc.id, ...doc.data() } });
+    } catch (error) {
+        console.log("Error fetching DJ:", error);
+        return res.status(500).json({ message: "Error fetching DJ" });
+    }
+}
+
 export const getDJAnalytics = async (req: Request, res: Response) => {
     try {
         const uid = req.user?.uid
