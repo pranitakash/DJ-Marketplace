@@ -100,7 +100,7 @@ const DJDashboard: React.FC = () => {
         setFeedbackMsg('');
         try {
             // Create or update
-            await api.post('/djs', profile);
+            await api.post('/djs', { ...profile, name: user?.name });
             setFeedbackMsg('Profile updated successfully.');
         } catch (err) {
             setFeedbackMsg('Failed to update profile.');

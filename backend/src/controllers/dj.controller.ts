@@ -11,14 +11,20 @@ export const createDJ = async (req: Request, res: Response) => {
         }
 
         const djRef = db.collection("djs").doc(uid);
+        const djDoc = await djRef.get();
 
-        await djRef.set({
+        const updateData: any = {
             ...data,
             id: uid, // ensure the id is part of the data
             updatedAt: new Date(),
-        }, { merge: true });
+        };
 
-        // If it's a new document, we might want to set createdAt, but merge doesn't natively do "setOnInsert" in basic set. 
+        if (!djDoc.exists) {
+            updateData.createdAt = new Date();
+        }
+
+        await djRef.set(updateData, { merge: true });
+
         // Best approach is just to ensure it upserts nicely.
         const doc = await djRef.get();
 

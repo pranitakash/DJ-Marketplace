@@ -41,9 +41,9 @@ const router = express.Router();
 router.post("/", verifyToken, createDJ);
 router.get("/", getAllDJs);
 router.get("/me", verifyToken, getDJProfile);
-router.get("/:id", getDJById);
 router.get("/analytics", verifyToken, requireRole("dj"), getDJAnalytics);
 router.post("/review", verifyToken, addReview);
 router.get("/review/:djId", verifyToken, getDJReviews);
+router.get("/:id", getDJById);
 
 export default router;

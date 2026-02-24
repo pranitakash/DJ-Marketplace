@@ -47,6 +47,7 @@ const SetupInfo: React.FC = () => {
         try {
             if (user?.role === 'dj') {
                 await api.post('/djs', {
+                    name: user?.name,
                     genre: djData.genre,
                     hourlyRate: Number(djData.hourlyRate) || 0,
                     bio: djData.bio,
