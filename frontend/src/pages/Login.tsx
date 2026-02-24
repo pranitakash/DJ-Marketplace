@@ -25,10 +25,13 @@ const Login: React.FC = () => {
       // Role-based Redirect Logic
       if (user.role === 'admin') {
         navigate('/dashboard/admin');
-      } else if (user.role === 'dj') {
-        navigate('/dashboard/dj');
       } else {
-        navigate('/explore');
+        const isSetup = localStorage.getItem(`setupComplete_${user._id || user.id}`);
+        if (isSetup) {
+          navigate(user.role === 'dj' ? '/dashboard/dj' : '/explore');
+        } else {
+          navigate('/setup-info');
+        }
       }
 
     } catch (err: any) {

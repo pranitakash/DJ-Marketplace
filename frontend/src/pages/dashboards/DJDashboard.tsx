@@ -322,14 +322,38 @@ const DJDashboard: React.FC = () => {
                                         </div>
 
                                         <div className="space-y-2">
-                                            <label className="block text-xs font-display uppercase tracking-widest text-gray-400">Profile Image URL</label>
-                                            <input
-                                                type="url"
-                                                placeholder="https://..."
-                                                value={profile.imageUrl}
-                                                onChange={(e) => setProfile({ ...profile, imageUrl: e.target.value })}
-                                                className="w-full bg-black/50 border border-white/20 text-white px-4 py-3 font-mono text-sm focus:outline-none focus:border-white transition-all"
-                                            />
+                                            <label className="block text-xs font-display uppercase tracking-widest text-gray-400">Profile Image</label>
+                                            <div className="flex items-center gap-4">
+                                                {profile.imageUrl && (
+                                                    <div className="size-16 rounded-full border border-white/20 overflow-hidden shrink-0">
+                                                        <img src={profile.imageUrl.startsWith('/') ? `${api.defaults.baseURL?.replace('/api', '')}${profile.imageUrl}` : profile.imageUrl} alt="Profile preview" className="w-full h-full object-cover" />
+                                                    </div>
+                                                )}
+                                                <input
+                                                    type="file"
+                                                    accept="image/*"
+                                                    onChange={async (e) => {
+                                                        const file = e.target.files?.[0];
+                                                        if (!file) return;
+                                                        setSaving(true);
+                                                        setFeedbackMsg('');
+                                                        try {
+                                                            const formData = new FormData();
+                                                            formData.append('image', file);
+                                                            const res = await api.post('/upload', formData, {
+                                                                headers: { 'Content-Type': 'multipart/form-data' }
+                                                            });
+                                                            setProfile({ ...profile, imageUrl: res.data.url });
+                                                            setFeedbackMsg('Image uploaded successfully.');
+                                                        } catch (err) {
+                                                            setFeedbackMsg('Failed to upload image.');
+                                                        } finally {
+                                                            setSaving(false);
+                                                        }
+                                                    }}
+                                                    className="w-full bg-black/50 border border-white/20 text-white px-4 py-3 font-mono text-sm focus:outline-none focus:border-white transition-all file:mr-4 file:py-2 file:px-4 file:rounded-none file:border-0 file:text-xs file:font-mono file:uppercase file:bg-white file:text-black hover:file:bg-gray-200"
+                                                />
+                                            </div>
                                         </div>
 
                                         <div className="space-y-2">

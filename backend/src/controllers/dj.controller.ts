@@ -68,7 +68,7 @@ export const getAllDJs = async (req: Request, res: Response) => {
 export const getDJById = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const doc = await db.collection("djs").doc(id).get();
+        const doc = await db.collection("djs").doc(id as string).get();
 
         if (!doc.exists) {
             return res.status(404).json({ message: "DJ not found" });
