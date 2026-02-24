@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DJ Night - System Access</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@300;400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "background-dark": "#050505",
+                        "surface-dark": "#0a0a0a",
+                        "surface-border": "#333333",
+                        "text-main": "#ffffff",
+                        "text-muted": "#888888",
+                        "charcoal": "#121212",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .grain-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.08;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        .vertical-text {
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            transform: rotate(180deg);
+        }input[type="text"], input[type="email"], input[type="password"] {
+            background: transparent;
+            border: none;
+            border-bottom: 1px solid #333;
+            border-radius: 0;
+            padding-left: 0;
+            transition: border-color 0.3s ease;
+        }
+        input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus {
+            box-shadow: none;
+            border-bottom-color: #fff;
+            ring: 0;
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-text-main font-body antialiased min-h-screen flex flex-col overflow-x-hidden selection:bg-white selection:text-black">
+<div class="grain-overlay"></div>
+<div class="fixed inset-0 pointer-events-none z-0">
+<div class="absolute left-0 top-0 bottom-0 w-px bg-white/5 lg:left-20"></div>
+<div class="absolute right-0 top-0 bottom-0 w-px bg-white/5 lg:right-20"></div>
+<div class="absolute top-20 left-0 right-0 h-px bg-white/5"></div>
+<div class="absolute bottom-20 left-0 right-0 h-px bg-white/5"></div>
+<div class="absolute left-1/2 top-0 bottom-0 w-px bg-white/5 hidden lg:block"></div>
+</div>
+<header class="fixed top-0 w-full z-50 flex items-center justify-between px-6 lg:px-20 py-6 border-b border-white/5 bg-background-dark/90 backdrop-blur-sm">
+<div class="flex items-center gap-3">
+<div class="size-4 bg-white rounded-none"></div>
+<h2 class="text-white text-sm font-display font-bold uppercase tracking-widest">DJ Night</h2>
+</div>
+<nav class="hidden md:flex gap-8">
+<a class="text-gray-500 hover:text-white transition-colors text-[10px] font-display uppercase tracking-widest" href="#">Directory</a>
+<a class="text-gray-500 hover:text-white transition-colors text-[10px] font-display uppercase tracking-widest" href="#">Journal</a>
+<span class="text-white text-[10px] font-display uppercase tracking-widest border-b border-white">Access</span>
+</nav>
+</header>
+<main class="flex-grow flex items-center justify-center pt-20 relative z-10 w-full min-h-screen">
+<div class="w-full max-w-[1920px] mx-auto grid grid-cols-1 lg:grid-cols-2 min-h-[calc(100vh-80px)]">
+<div class="relative hidden lg:flex flex-col justify-between border-r border-white/10 p-12 lg:pl-20 overflow-hidden bg-charcoal">
+<div class="absolute inset-0 opacity-20 mix-blend-luminosity">
+<div class="absolute inset-0 bg-cover bg-center grayscale" style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuAB8HHQXY76XplmpfU7xUXHwmE-ID5EbFvbxFD4jgQxOJE7x5xUcqi_5AfHzxVrr29Y2DVuj4bQkQQbM2qsGME3lV0OoCHtRlKHGov-JO58CTBzDufSi74MoPOFcUxVyZF1fLoAkh88L972POL6o_a41YXnB3EjTi4xGHiC6oJtOK2y_8F8XvXZ2iZbY6K33APeFYt1UhpeF2uMK59NDhgTzWQnzPLCUSUQSwULlosLhJR54DkYOIPCNHbyW4xoWDCuO9gDbIKIKC8");'></div>
+</div>
+<div class="relative z-10 flex flex-col h-full justify-between">
+<div class="font-mono text-[10px] text-gray-400 uppercase tracking-widest">
+                     Secure Protocol<br/>
+                     v.2.4.0
+                 </div>
+<div class="flex-grow flex items-center justify-center">
+<h1 class="vertical-text text-[12vh] font-display font-bold leading-none tracking-tighter text-white opacity-90 uppercase whitespace-nowrap select-none">
+                        System Access
+                    </h1>
+</div>
+<div class="flex justify-between items-end border-t border-white/10 pt-6">
+<p class="font-mono text-xs text-gray-500 max-w-xs">
+                         Strictly for professional use.<br/>
+                         Unauthorized access is monitored.
+                     </p>
+<div class="size-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
+</div>
+</div>
+</div>
+<div class="flex flex-col justify-center px-6 md:px-20 lg:px-24 py-12 relative bg-background-dark">
+<div class="w-full max-w-md mx-auto">
+<div class="mb-12">
+<h2 class="text-3xl font-display font-medium uppercase mb-2">Initialize Session</h2>
+<p class="text-gray-500 font-mono text-xs">Enter your credentials to access the grid.</p>
+</div>
+<form class="space-y-10">
+<div class="space-y-4">
+<label class="font-mono text-[10px] text-gray-400 uppercase tracking-widest block">Select Role Profile</label>
+<div class="grid grid-cols-2 gap-0 border border-white/20">
+<label class="cursor-pointer relative group">
+<input checked="" class="peer sr-only" name="role" type="radio" value="organizer"/>
+<div class="p-4 text-center transition-all duration-300 peer-checked:bg-white peer-checked:text-black hover:bg-white/5">
+<span class="font-display font-bold uppercase tracking-wider text-sm">Organizer</span>
+</div>
+</label>
+<label class="cursor-pointer relative group">
+<input class="peer sr-only" name="role" type="radio" value="artist"/>
+<div class="p-4 text-center transition-all duration-300 peer-checked:bg-white peer-checked:text-black hover:bg-white/5">
+<span class="font-display font-bold uppercase tracking-wider text-sm">Artist</span>
+</div>
+</label>
+</div>
+</div>
+<div class="space-y-8">
+<div class="relative group">
+<input class="block w-full text-white text-lg font-mono focus:outline-none pb-2 bg-transparent appearance-none peer border-b border-gray-700 focus:border-white transition-colors" id="email" placeholder=" " type="email"/>
+<label class="absolute text-gray-500 font-mono text-xs uppercase duration-300 transform -translate-y-6 scale-75 top-1 z-10 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 peer-focus:text-white" for="email">
+                                ID / Email Address
+                            </label>
+</div>
+<div class="relative group">
+<input class="block w-full text-white text-lg font-mono focus:outline-none pb-2 bg-transparent appearance-none peer border-b border-gray-700 focus:border-white transition-colors" id="password" placeholder=" " type="password"/>
+<label class="absolute text-gray-500 font-mono text-xs uppercase duration-300 transform -translate-y-6 scale-75 top-1 z-10 origin-[0] peer-placeholder-shown:scale-100 peer-placeholder-shown:translate-y-0 peer-focus:scale-75 peer-focus:-translate-y-6 peer-focus:text-white" for="password">
+                                Passkey
+                            </label>
+</div>
+</div>
+<div class="pt-6 space-y-6">
+<button class="w-full bg-[#e0e0e0] hover:bg-white text-black font-display font-bold uppercase tracking-[0.15em] py-4 transition-all duration-300 relative overflow-hidden group" type="submit">
+<span class="relative z-10">Authenticate</span>
+<div class="absolute inset-0 h-full w-full bg-white/50 transform translate-x-full group-hover:translate-x-0 transition-transform duration-300 ease-out"></div>
+</button>
+<div class="flex justify-between items-center text-[10px] font-mono uppercase tracking-widest text-gray-500">
+<a class="hover:text-white border-b border-transparent hover:border-white transition-all pb-0.5" href="#">Forgot Passkey</a>
+<a class="hover:text-white border-b border-transparent hover:border-white transition-all pb-0.5" href="#">Request Access</a>
+</div>
+</div>
+</form>
+<div class="mt-20 pt-8 border-t border-white/5 flex gap-4 text-gray-600">
+<span class="material-symbols-outlined text-lg opacity-50">lock</span>
+<p class="font-mono text-[10px] leading-relaxed uppercase">
+                        Encrypted connection established.<br/>
+                        All activity is logged on the chain.
+                    </p>
+</div>
+</div>
+</div>
+</div>
+</main>
+
+</body></html>

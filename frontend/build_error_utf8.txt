@@ -1,0 +1,139 @@
+﻿
+> frontend@0.0.0 build
+> tsc -b && vite build
+
+[36mvite v7.3.1 [32mbuilding client environment for production...[36m[39m
+transforming...
+node.exe : Error: Cannot 
+apply unknown utility class 
+`bg-background-dark`. Are 
+you using CSS modules or 
+similar and missing 
+`@reference`? https://tailwin
+dcss.com/docs/functions-and-d
+irectives#reference-directive
+At line:1 char:1
++ & "C:\Program 
+Files\nodejs/node.exe" 
+"C:\Program 
+Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~
+    + CategoryInfo           
+   : NotSpecified: (Error:   
+  Cannot a...rence-directi   
+ ve:String) [], RemoteExc    
+eption
+    + FullyQualifiedErrorId  
+   : NativeCommandError
+ 
+    at onInvalidCandidate 
+(D:\PROJECTS\DJ Marketplace\f
+rontend\node_modules\tailwind
+css\dist\lib.js:21:1314)
+    at Ee (D:\PROJECTS\DJ Mar
+ketplace\frontend\node_module
+s\tailwindcss\dist\lib.js:16:
+37066)
+    at D:\PROJECTS\DJ Marketp
+lace\frontend\node_modules\ta
+ilwindcss\dist\lib.js:21:355
+    at Pr (D:\PROJECTS\DJ Mar
+ketplace\frontend\node_module
+s\tailwindcss\dist\lib.js:3:1
+733)
+    at _ (D:\PROJECTS\DJ Mark
+etplace\frontend\node_modules
+\tailwindcss\dist\lib.js:3:13
+77)
+    at Te (D:\PROJECTS\DJ Mar
+ketplace\frontend\node_module
+s\tailwindcss\dist\lib.js:21:
+172)
+    at pn (D:\PROJECTS\DJ Mar
+ketplace\frontend\node_module
+s\tailwindcss\dist\lib.js:38:
+294)
+    at async dn 
+(D:\PROJECTS\DJ Marketplace\f
+rontend\node_modules\tailwind
+css\dist\lib.js:38:631)
+    at async Xr 
+(D:\PROJECTS\DJ Marketplace\f
+rontend\node_modules\@tailwin
+dcss\node\dist\index.js:10:34
+17)
+    at async N 
+(D:\PROJECTS\DJ Marketplace\f
+rontend\node_modules\@tailwin
+dcss\postcss\dist\index.js:10
+:3979)
+[32mΓ£ô[39m 3 modules transformed.
+[31mΓ£ù[39m Build failed 
+in 320ms
+[31merror during build:
+[31m[vite:css] [postcss] 
+tailwindcss: D:/PROJECTS/DJ M
+arketplace/frontend/src/index
+.css:1:1: Cannot apply 
+unknown utility class 
+`bg-background-dark`. Are 
+you using CSS modules or 
+similar and missing 
+`@reference`? https://tailwin
+dcss.com/docs/functions-and-d
+irectives#reference-directive
+[31m
+file: [36mD:/PROJECTS/DJ Mar
+ketplace/frontend/src/index.c
+ss:1:0[31m
+    at Input.error 
+(D:\PROJECTS\DJ Marketplace\f
+rontend\node_modules\postcss\
+lib\input.js:135:16)
+    at Root.error 
+(D:\PROJECTS\DJ Marketplace\f
+rontend\node_modules\postcss\
+lib\node.js:146:32)
+    at Object.Once 
+(D:\PROJECTS\DJ Marketplace\f
+rontend\node_modules\@tailwin
+dcss\postcss\dist\index.js:10
+:6913)
+    at async 
+LazyResult.runAsync 
+(D:\PROJECTS\DJ Marketplace\f
+rontend\node_modules\postcss\
+lib\lazy-result.js:293:11)
+    at async runPostCSS (file
+:///D:/PROJECTS/DJ%20Marketpl
+ace/frontend/node_modules/vit
+e/dist/node/chunks/config.js:
+30145:19)
+    at async compilePostCSS (
+file:///D:/PROJECTS/DJ%20Mark
+etplace/frontend/node_modules
+/vite/dist/node/chunks/config
+.js:30129:6)
+    at async compileCSS (file
+:///D:/PROJECTS/DJ%20Marketpl
+ace/frontend/node_modules/vit
+e/dist/node/chunks/config.js:
+30059:26)
+    at async Object.handler (
+file:///D:/PROJECTS/DJ%20Mark
+etplace/frontend/node_modules
+/vite/dist/node/chunks/config
+.js:29592:54)
+    at async transform (file:
+///D:/PROJECTS/DJ%20Marketpla
+ce/frontend/node_modules/roll
+up/dist/es/shared/node-entry.
+js:21269:16)
+    at async 
+ModuleLoader.addModuleSource 
+(file:///D:/PROJECTS/DJ%20Mar
+ketplace/frontend/node_module
+s/rollup/dist/es/shared/node-
+entry.js:21497:36)[39m

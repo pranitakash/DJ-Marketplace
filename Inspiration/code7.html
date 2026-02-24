@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DJ Night - Admin Infrastructure Panel</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&amp;family=Noto+Sans:wght@300;400;500;700&amp;family=JetBrains+Mono:wght@300;400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#333", 
+                        "accent": "#ffffff",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#050505",
+                        "surface-dark": "#0a0a0a",
+                        "surface-border": "#262626",
+                        "text-main": "#ededed",
+                        "text-muted": "#666666",
+                    },
+                    fontFamily: {
+                        "display": ["Space Grotesk", "sans-serif"],
+                        "body": ["Noto Sans", "sans-serif"],
+                        "mono": ["JetBrains Mono", "monospace"],
+                    },
+                    backgroundImage: {
+                        'grid-pattern': "linear-gradient(to right, #1a1a1a 1px, transparent 1px), linear-gradient(to bottom, #1a1a1a 1px, transparent 1px)",
+                    },
+                    backgroundSize: {
+                        'grid-size': '24px 24px',
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #050505;
+            border-left: 1px solid #222;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #333;
+            border-radius: 0px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+        .grain-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 50;
+            opacity: 0.04;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+        }
+        .blueprint-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(40, 40, 40, 0.5) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(40, 40, 40, 0.5) 1px, transparent 1px);
+        }
+        .uptime-wave {
+            stroke-dasharray: 1000;
+            stroke-dashoffset: 1000;
+            animation: draw 5s linear infinite;
+        }
+        @keyframes draw {
+            to {
+                stroke-dashoffset: 0;
+            }
+        }
+    </style>
+</head>
+<body class="bg-background-dark text-text-main font-body antialiased min-h-screen flex overflow-hidden selection:bg-white selection:text-black">
+<div class="grain-overlay"></div>
+<div class="fixed inset-0 blueprint-grid pointer-events-none z-0 opacity-20"></div>
+<aside class="w-64 border-r border-surface-border bg-black/90 flex flex-col z-20 h-screen shrink-0 relative">
+<div class="h-16 flex items-center px-6 border-b border-surface-border">
+<div class="flex items-center gap-2">
+<div class="size-3 bg-white"></div>
+<h1 class="text-sm font-display font-bold uppercase tracking-widest text-white">DJ Night <span class="text-text-muted">OPS</span></h1>
+</div>
+</div>
+<nav class="flex-1 overflow-y-auto py-6 px-4 space-y-8">
+<div>
+<h3 class="text-[10px] font-mono uppercase text-text-muted mb-4 tracking-widest pl-2">Infrastructure</h3>
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-xs font-mono text-white bg-white/5 border border-white/10" href="#">
+<span class="material-symbols-outlined text-sm">grid_view</span>
+                        Overview
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-xs font-mono text-text-muted hover:text-white hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">dns</span>
+                        Nodes
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-xs font-mono text-text-muted hover:text-white hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">activity_zone</span>
+                        Traffic
+                    </a>
+</li>
+</ul>
+</div>
+<div>
+<h3 class="text-[10px] font-mono uppercase text-text-muted mb-4 tracking-widest pl-2">Governance</h3>
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-xs font-mono text-text-muted hover:text-white hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">group</span>
+                        User Mod
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-xs font-mono text-text-muted hover:text-white hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">payments</span>
+                        Financials
+                    </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-2 py-2 text-xs font-mono text-text-muted hover:text-white hover:bg-white/5 transition-colors" href="#">
+<span class="material-symbols-outlined text-sm">gavel</span>
+                        Disputes
+                    </a>
+</li>
+</ul>
+</div>
+</nav>
+<div class="p-4 border-t border-surface-border">
+<div class="flex items-center gap-3 px-2 py-2">
+<div class="size-8 bg-surface-border rounded-full flex items-center justify-center">
+<span class="font-mono text-xs text-white">AD</span>
+</div>
+<div class="flex flex-col">
+<span class="text-xs font-bold font-display uppercase">Admin</span>
+<span class="text-[10px] text-text-muted font-mono">root@djnight.io</span>
+</div>
+</div>
+</div>
+</aside>
+<main class="flex-1 flex flex-col h-screen overflow-hidden relative z-10 bg-background-dark/50 backdrop-blur-sm">
+<header class="h-16 border-b border-surface-border bg-black/50 backdrop-blur flex items-center justify-between px-8 shrink-0">
+<div class="flex items-center gap-4 text-xs font-mono text-text-muted uppercase">
+<span>System</span>
+<span class="text-surface-border">/</span>
+<span class="text-white">Dashboard</span>
+<span class="text-surface-border">/</span>
+<span>V 2.4.1</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2">
+<span class="size-2 bg-green-500 rounded-full animate-pulse"></span>
+<span class="text-xs font-mono text-white tracking-widest">SYSTEM OPTIMAL</span>
+</div>
+<button class="border border-surface-border p-2 hover:bg-white hover:text-black transition-colors">
+<span class="material-symbols-outlined text-sm block">notifications</span>
+</button>
+<button class="border border-surface-border p-2 hover:bg-white hover:text-black transition-colors">
+<span class="material-symbols-outlined text-sm block">settings</span>
+</button>
+</div>
+</header>
+<div class="flex-1 overflow-y-auto p-8">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-px bg-surface-border border border-surface-border mb-8">
+<div class="bg-black p-6 group hover:bg-surface-dark transition-colors">
+<div class="flex justify-between items-start mb-4">
+<span class="text-[10px] font-mono text-text-muted uppercase tracking-widest">Total Revenue</span>
+<span class="material-symbols-outlined text-text-muted text-sm">trending_up</span>
+</div>
+<div class="text-3xl font-display font-bold text-white mb-1">€2.4M</div>
+<div class="text-[10px] font-mono text-green-500">+12.5% vs last period</div>
+</div>
+<div class="bg-black p-6 group hover:bg-surface-dark transition-colors">
+<div class="flex justify-between items-start mb-4">
+<span class="text-[10px] font-mono text-text-muted uppercase tracking-widest">Active Contracts</span>
+<span class="material-symbols-outlined text-text-muted text-sm">contract</span>
+</div>
+<div class="text-3xl font-display font-bold text-white mb-1">842</div>
+<div class="text-[10px] font-mono text-text-muted">98 Pending approval</div>
+</div>
+<div class="bg-black p-6 group hover:bg-surface-dark transition-colors">
+<div class="flex justify-between items-start mb-4">
+<span class="text-[10px] font-mono text-text-muted uppercase tracking-widest">Server Load</span>
+<span class="material-symbols-outlined text-text-muted text-sm">memory</span>
+</div>
+<div class="text-3xl font-display font-bold text-white mb-1">34%</div>
+<div class="w-full bg-surface-border h-1 mt-2">
+<div class="bg-white h-full w-[34%]"></div>
+</div>
+</div>
+<div class="bg-black p-6 group hover:bg-surface-dark transition-colors">
+<div class="flex justify-between items-start mb-4">
+<span class="text-[10px] font-mono text-text-muted uppercase tracking-widest">Security Flags</span>
+<span class="material-symbols-outlined text-text-muted text-sm">security</span>
+</div>
+<div class="text-3xl font-display font-bold text-white mb-1">02</div>
+<div class="text-[10px] font-mono text-red-500">Action Required</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8">
+<div class="col-span-1 lg:col-span-2 border border-surface-border bg-black">
+<div class="p-4 border-b border-surface-border flex justify-between items-center">
+<h3 class="font-display font-bold uppercase text-sm tracking-widest">System Uptime Visualization</h3>
+<div class="flex gap-2 text-[10px] font-mono text-text-muted">
+<span class="px-2 py-1 border border-surface-border bg-surface-dark text-white">24H</span>
+<span class="px-2 py-1 border border-surface-border cursor-pointer hover:text-white">7D</span>
+<span class="px-2 py-1 border border-surface-border cursor-pointer hover:text-white">30D</span>
+</div>
+</div>
+<div class="relative h-64 w-full flex items-center justify-center overflow-hidden bg-black/50 p-6">
+<div class="absolute inset-0 z-0 opacity-10" style="background-image: linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px); background-size: 20px 20px;"></div>
+<svg class="w-full h-full z-10" preserveAspectRatio="none" viewBox="0 0 800 200">
+<path class="uptime-wave" d="M0,100 Q40,80 80,100 T160,100 T240,100 T320,120 T400,90 T480,100 T560,100 T640,80 T720,110 T800,100" fill="none" stroke="white" stroke-width="1"></path>
+<path class="opacity-30" d="M0,105 Q40,85 80,105 T160,105 T240,105 T320,125 T400,95 T480,105 T560,105 T640,85 T720,115 T800,105" fill="none" stroke="#666" stroke-width="1"></path>
+</svg>
+<div class="absolute bottom-4 left-6 text-[10px] font-mono text-text-muted">
+                        Response Time: <span class="text-white">12ms</span>
+</div>
+<div class="absolute bottom-4 right-6 text-[10px] font-mono text-green-500">
+                        99.99% Uptime
+                    </div>
+</div>
+</div>
+<div class="border border-surface-border bg-black flex flex-col">
+<div class="p-4 border-b border-surface-border">
+<h3 class="font-display font-bold uppercase text-sm tracking-widest">System Log</h3>
+</div>
+<div class="flex-1 overflow-y-auto p-4 space-y-4 font-mono text-[10px]">
+<div class="flex gap-3">
+<span class="text-text-muted">10:42:21</span>
+<span class="text-white">USER_MOD</span>
+<span class="text-text-muted">@djalex blocked by admin</span>
+</div>
+<div class="flex gap-3">
+<span class="text-text-muted">10:40:05</span>
+<span class="text-white">FINANCE</span>
+<span class="text-text-muted">Payout batch #4402 processed</span>
+</div>
+<div class="flex gap-3">
+<span class="text-text-muted">10:38:12</span>
+<span class="text-white">SYSTEM</span>
+<span class="text-text-muted">Node rebalance complete</span>
+</div>
+<div class="flex gap-3">
+<span class="text-text-muted">10:32:00</span>
+<span class="text-white">AUTH</span>
+<span class="text-text-muted">Failed login attempt IP 192.168.1.1</span>
+</div>
+<div class="flex gap-3">
+<span class="text-text-muted">10:28:55</span>
+<span class="text-white">CONTRACT</span>
+<span class="text-text-muted">New rider signed for Event #992</span>
+</div>
+<div class="flex gap-3">
+<span class="text-text-muted">10:15:30</span>
+<span class="text-white">SYSTEM</span>
+<span class="text-text-muted">Backup routine initialized</span>
+</div>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+<div class="border border-surface-border bg-black">
+<div class="p-4 border-b border-surface-border flex justify-between items-center">
+<h3 class="font-display font-bold uppercase text-sm tracking-widest">Recent User Activity</h3>
+<button class="text-[10px] font-mono border border-surface-border px-2 py-1 hover:bg-white hover:text-black transition-colors uppercase">View All</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-surface-border bg-surface-dark/50">
+<th class="p-4 text-[10px] font-mono uppercase text-text-muted font-normal tracking-wider w-12">ID</th>
+<th class="p-4 text-[10px] font-mono uppercase text-text-muted font-normal tracking-wider">User</th>
+<th class="p-4 text-[10px] font-mono uppercase text-text-muted font-normal tracking-wider">Role</th>
+<th class="p-4 text-[10px] font-mono uppercase text-text-muted font-normal tracking-wider">Status</th>
+<th class="p-4 text-[10px] font-mono uppercase text-text-muted font-normal tracking-wider text-right">Action</th>
+</tr>
+</thead>
+<tbody class="text-xs font-mono">
+<tr class="border-b border-surface-border hover:bg-white/5 transition-colors">
+<td class="p-4 text-text-muted">001</td>
+<td class="p-4 text-white font-bold">DJ Axon</td>
+<td class="p-4 text-text-muted">Artist</td>
+<td class="p-4"><span class="px-2 py-0.5 border border-white/20 text-[10px] rounded-full text-white bg-white/10">ACTIVE</span></td>
+<td class="p-4 text-right"><span class="material-symbols-outlined text-sm text-text-muted cursor-pointer hover:text-white">more_horiz</span></td>
+</tr>
+<tr class="border-b border-surface-border hover:bg-white/5 transition-colors">
+<td class="p-4 text-text-muted">002</td>
+<td class="p-4 text-white font-bold">Club 44</td>
+<td class="p-4 text-text-muted">Venue</td>
+<td class="p-4"><span class="px-2 py-0.5 border border-white/20 text-[10px] rounded-full text-gray-400 bg-transparent">PENDING</span></td>
+<td class="p-4 text-right"><span class="material-symbols-outlined text-sm text-text-muted cursor-pointer hover:text-white">more_horiz</span></td>
+</tr>
+<tr class="border-b border-surface-border hover:bg-white/5 transition-colors">
+<td class="p-4 text-text-muted">003</td>
+<td class="p-4 text-white font-bold">TechnoInc</td>
+<td class="p-4 text-text-muted">Promoter</td>
+<td class="p-4"><span class="px-2 py-0.5 border border-white/20 text-[10px] rounded-full text-gray-500 line-through decoration-gray-500">HALT</span></td>
+<td class="p-4 text-right"><span class="material-symbols-outlined text-sm text-text-muted cursor-pointer hover:text-white">more_horiz</span></td>
+</tr>
+<tr class="border-b border-surface-border hover:bg-white/5 transition-colors">
+<td class="p-4 text-text-muted">004</td>
+<td class="p-4 text-white font-bold">Sarah V.</td>
+<td class="p-4 text-text-muted">Manager</td>
+<td class="p-4"><span class="px-2 py-0.5 border border-white/20 text-[10px] rounded-full text-white bg-white/10">ACTIVE</span></td>
+<td class="p-4 text-right"><span class="material-symbols-outlined text-sm text-text-muted cursor-pointer hover:text-white">more_horiz</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="border border-surface-border bg-black">
+<div class="p-4 border-b border-surface-border flex justify-between items-center">
+<h3 class="font-display font-bold uppercase text-sm tracking-widest">Transaction Ledger</h3>
+<button class="text-[10px] font-mono border border-surface-border px-2 py-1 hover:bg-white hover:text-black transition-colors uppercase">Export CSV</button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-surface-border bg-surface-dark/50">
+<th class="p-4 text-[10px] font-mono uppercase text-text-muted font-normal tracking-wider">Ref</th>
+<th class="p-4 text-[10px] font-mono uppercase text-text-muted font-normal tracking-wider">Entity</th>
+<th class="p-4 text-[10px] font-mono uppercase text-text-muted font-normal tracking-wider">Date</th>
+<th class="p-4 text-[10px] font-mono uppercase text-text-muted font-normal tracking-wider text-right">Amount</th>
+<th class="p-4 text-[10px] font-mono uppercase text-text-muted font-normal tracking-wider text-right">State</th>
+</tr>
+</thead>
+<tbody class="text-xs font-mono">
+<tr class="border-b border-surface-border hover:bg-white/5 transition-colors">
+<td class="p-4 text-text-muted">#TX-9921</td>
+<td class="p-4 text-white">Berghain Main</td>
+<td class="p-4 text-text-muted">Oct 24</td>
+<td class="p-4 text-right text-white">€12,500.00</td>
+<td class="p-4 text-right"><span class="size-2 bg-white rounded-full inline-block"></span></td>
+</tr>
+<tr class="border-b border-surface-border hover:bg-white/5 transition-colors">
+<td class="p-4 text-text-muted">#TX-9920</td>
+<td class="p-4 text-white">Fabric London</td>
+<td class="p-4 text-text-muted">Oct 23</td>
+<td class="p-4 text-right text-white">€8,200.00</td>
+<td class="p-4 text-right"><span class="size-2 bg-white rounded-full inline-block"></span></td>
+</tr>
+<tr class="border-b border-surface-border hover:bg-white/5 transition-colors">
+<td class="p-4 text-text-muted">#TX-9919</td>
+<td class="p-4 text-white">Private Event</td>
+<td class="p-4 text-text-muted">Oct 23</td>
+<td class="p-4 text-right text-white">€45,000.00</td>
+<td class="p-4 text-right"><span class="size-2 bg-gray-600 rounded-full inline-block"></span></td>
+</tr>
+<tr class="border-b border-surface-border hover:bg-white/5 transition-colors">
+<td class="p-4 text-text-muted">#TX-9918</td>
+<td class="p-4 text-white">Rex Club</td>
+<td class="p-4 text-text-muted">Oct 22</td>
+<td class="p-4 text-right text-white">€5,400.00</td>
+<td class="p-4 text-right"><span class="size-2 bg-white rounded-full inline-block"></span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>
