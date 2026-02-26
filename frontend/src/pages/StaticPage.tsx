@@ -1,6 +1,5 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Navbar from '../components/Navbar';
 
 interface StaticPageProps {
     title: string;
@@ -8,14 +7,7 @@ interface StaticPageProps {
 
 const StaticPage: React.FC<StaticPageProps> = ({ title }) => {
     return (
-        <>
-            <div className="grain-overlay"></div>
-            <div className="fixed inset-0 blueprint-grid pointer-events-none z-0"></div>
-
-            <div className="relative z-10 flex flex-col min-h-screen w-full">
-                <Navbar />
-
-                <main className="flex-grow pt-32 px-6 flex items-center justify-center">
+        <div className="flex-grow pt-12 px-6 flex items-center justify-center">
                     <div className="text-center glass-card hover-butter p-12 max-w-2xl w-full">
                         <div className="mb-6 flex items-center justify-center gap-4 text-xs font-display uppercase tracking-[0.3em] text-white/70">
                             <span className="block h-px w-8 bg-white/50"></span>
@@ -30,9 +22,7 @@ const StaticPage: React.FC<StaticPageProps> = ({ title }) => {
                             Return to Directory
                         </Link>
                     </div>
-                </main>
-            </div>
-        </>
+        </div>
     );
 };
 

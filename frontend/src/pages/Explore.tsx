@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../services/api';
-import { useAuth } from '../context/AuthContext';
 import CustomDropdown from '../components/CustomDropdown';
+import { staticArtists } from '../data/artistsData';
 
 interface DJ {
     id?: string;
@@ -15,6 +15,64 @@ interface DJ {
     bio?: string;
 }
 
+// ── Mock Data (fallback when API returns no results) ──────────────────────
+const MOCK_DJS: DJ[] = [
+    {
+        id: 'mock_dj_1',
+        name: 'DJ Axon',
+        genre: 'Techno',
+        hourlyRate: 150,
+        rating: 4.8,
+        imageUrl: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=2070&auto=format&fit=crop',
+        bio: 'High-energy techno and warehouse specialist. Known for relentless 4-hour marathon sets.'
+    },
+    {
+        id: 'mock_dj_2',
+        name: 'Priya Sonic',
+        genre: 'Deep House',
+        hourlyRate: 120,
+        rating: 4.6,
+        imageUrl: 'https://images.unsplash.com/photo-1508854710579-5cecc3a9ff17?q=80&w=2070&auto=format&fit=crop',
+        bio: 'Ethereal deep house architect weaving hypnotic basslines and atmospheric textures.'
+    },
+    {
+        id: 'mock_dj_3',
+        name: 'KRNL',
+        genre: 'Industrial',
+        hourlyRate: 200,
+        rating: 4.9,
+        imageUrl: 'https://images.unsplash.com/photo-1571266028243-3716f02d2d2e?q=80&w=2071&auto=format&fit=crop',
+        bio: 'Raw industrial soundscapes fused with pounding kick drums. Not for the faint-hearted.'
+    },
+    {
+        id: 'mock_dj_4',
+        name: 'Neon Vox',
+        genre: 'Trance',
+        hourlyRate: 100,
+        rating: 4.5,
+        imageUrl: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=2070&auto=format&fit=crop',
+        bio: 'Uplifting trance voyager taking crowds on euphoric sonic odysseys since 2016.'
+    },
+    {
+        id: 'mock_dj_5',
+        name: 'Bass Theory',
+        genre: 'Drum & Bass',
+        hourlyRate: 130,
+        rating: 4.7,
+        imageUrl: 'https://images.unsplash.com/photo-1571935441289-db81ce9a47e1?q=80&w=2070&auto=format&fit=crop',
+        bio: 'Liquid rollers to heavyweight neuro. Versatile DnB selector with a global following.'
+    },
+    {
+        id: 'mock_dj_6',
+        name: 'Mira Dusk',
+        genre: 'Minimal',
+        hourlyRate: 110,
+        rating: 4.4,
+        imageUrl: 'https://images.unsplash.com/photo-1598387181032-a3103a2db5b3?q=80&w=2076&auto=format&fit=crop',
+        bio: 'Less is more. Surgical precision in stripped-back grooves and micro-detailed percussion.'
+    }
+];
+
 
 const Explore: React.FC = () => {
     const [djs, setDjs] = useState<DJ[]>([]);
@@ -25,7 +83,7 @@ const Explore: React.FC = () => {
     const [minPrice, setMinPrice] = useState<string>('');
     const [maxPrice, setMaxPrice] = useState<string>('');
 
-    const { user, logout } = useAuth();
+
 
     const fetchDjs = async () => {
         setLoading(true);
@@ -49,9 +107,13 @@ const Explore: React.FC = () => {
         fetchDjs();
     }, []);
 
-    const genres = ['all', ...Array.from(new Set(djs.map((dj) => dj.genre?.toLowerCase())))].filter(Boolean);
+    // Use API data if available, otherwise fall back to mock data
+    const displayedDjs = djs.length > 0 ? djs : MOCK_DJS;
+    const isUsingMockData = djs.length === 0;
 
-    let filteredDjs = djs.filter((dj) => {
+    const genres = ['all', ...Array.from(new Set(displayedDjs.map((dj) => dj.genre?.toLowerCase())))].filter(Boolean);
+
+    let filteredDjs = displayedDjs.filter((dj) => {
         if (genreFilter === 'all') return true;
         return dj.genre?.toLowerCase() === genreFilter;
     });
@@ -64,40 +126,8 @@ const Explore: React.FC = () => {
     });
 
     return (
-        <>
-            <div className="grain-overlay"></div>
-            <div className="fixed inset-0 blueprint-grid pointer-events-none z-0"></div>
-
-            <div className="relative z-10 flex flex-col min-h-screen w-full">
-                <header className="fixed top-0 w-full z-50 flex items-center justify-between border-b border-white/10 bg-background-dark/80 backdrop-blur-md px-6 lg:pl-20 lg:pr-10 py-5">
-                    <Link to="/" className="flex items-center gap-3">
-                        <div className="size-6 bg-white rounded-full animate-pulse"></div>
-                        <h2 className="text-white text-lg font-display font-bold uppercase tracking-widest">DJ Night</h2>
-                    </Link>
-
-                    <div className="hidden md:flex items-center gap-12">
-                        <nav className="flex gap-8">
-                            <Link to="/explore" className="text-white transition-colors text-xs font-display uppercase tracking-widest border-b border-white pb-1">Directory</Link>
-                        </nav>
-                        {user ? (
-                            <div className="flex items-center gap-4">
-                                <span className="text-white text-xs font-display uppercase tracking-widest">{user.name}</span>
-                                <button onClick={logout} className="border border-white/30 hover:bg-white hover:text-black hover:border-white transition-all duration-300 px-6 py-2 text-xs font-bold uppercase tracking-widest">
-                                    Log Out
-                                </button>
-                                <Link to={`/dashboard/${user.role || 'user'}`} className="bg-white text-black border border-white hover:bg-transparent hover:text-white transition-all duration-300 px-6 py-2 text-xs font-bold uppercase tracking-widest">
-                                    Dashboard
-                                </Link>
-                            </div>
-                        ) : (
-                            <Link to="/login" className="border border-white/30 hover:bg-white hover:text-black hover:border-white transition-all duration-300 px-6 py-2 text-xs font-bold uppercase tracking-widest">
-                                Log In
-                            </Link>
-                        )}
-                    </div>
-                </header>
-
-                <main className="flex-grow pt-32 px-6 lg:px-20 pb-20">
+        <div className="w-full">
+                <div className="flex-grow pt-8 px-6 lg:px-20 pb-20">
                     <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-8">
                         <div>
                             <div className="mb-4 flex items-center gap-4 text-xs font-display uppercase tracking-[0.3em] text-white/70">
@@ -166,6 +196,81 @@ const Explore: React.FC = () => {
                         </div>
                     </div>
 
+                    {/* Featured Static Artists from code3.html */}
+                    <div className="mb-16">
+                        <div className="flex items-center gap-4 mb-8">
+                            <span className="font-mono text-[10px] text-white/40 uppercase tracking-widest">// FEATURED_ROSTER</span>
+                            <div className="flex-1 h-px bg-white/10"></div>
+                            <span className="font-mono text-[10px] text-white/30">RESULTS: {staticArtists.length}</span>
+                        </div>
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-px bg-white/10 border border-white/10">
+                            {staticArtists.map((artist, idx) => (
+                                <Link
+                                    to={`/artist/${artist.slug}`}
+                                    key={artist.slug}
+                                    className="artist-card-hover group relative aspect-[3/4] overflow-hidden bg-[#0a0a0a] block"
+                                >
+                                    <div
+                                        className="absolute inset-0 bg-cover bg-center grayscale contrast-125 brightness-90 transition-transform duration-700 ease-out group-hover:scale-105"
+                                        style={{ backgroundImage: `url("${artist.imageUrl}")` }}
+                                    ></div>
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-60 group-hover:opacity-80 transition-opacity duration-300"></div>
+                                    <div className="absolute top-4 left-4 right-4 h-px bg-white/20 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left"></div>
+                                    <div className="absolute bottom-4 left-4 right-4 h-px bg-white/20 scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-right"></div>
+                                    <div className="absolute inset-0 p-6 flex flex-col justify-between">
+                                        <div className="flex justify-between items-start">
+                                            <span className="font-mono text-[10px] bg-white text-black px-1.5 py-0.5 font-bold">
+                                                {String(idx + 1).padStart(3, '0')}
+                                            </span>
+                                            <div className="metadata-reveal flex flex-col items-end gap-1">
+                                                <span className="font-mono text-[10px] text-white/70 bg-black/50 backdrop-blur px-2 py-0.5 border border-white/10">{artist.genre.toUpperCase()}</span>
+                                                <span className="font-mono text-[10px] text-white/70 bg-black/50 backdrop-blur px-2 py-0.5 border border-white/10">{artist.bpm} BPM</span>
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <h3 className="font-display text-4xl font-bold uppercase leading-none tracking-tight mb-2 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">{artist.name}</h3>
+                                            <div className="metadata-reveal space-y-2">
+                                                <div className="h-px w-full bg-white/30"></div>
+                                                <div className="grid grid-cols-2 gap-4 font-mono text-[10px] text-gray-300 uppercase tracking-wider">
+                                                    <div>
+                                                        <span className="block text-gray-500">Location</span>
+                                                        <span>{artist.location}</span>
+                                                    </div>
+                                                    <div>
+                                                        <span className="block text-gray-500">Rate</span>
+                                                        <span>{artist.rate}</span>
+                                                    </div>
+                                                    <div className="col-span-2">
+                                                        <span className="block text-gray-500">Next Available</span>
+                                                        <span className="text-white">{artist.nextAvailable}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Link>
+                            ))}
+                            {/* Join Roster Card */}
+                            <div className="relative aspect-[3/4] overflow-hidden bg-black flex flex-col items-center justify-center border border-white/5 hidden lg:flex">
+                                <div className="absolute inset-0 blueprint-grid opacity-20"></div>
+                                <div className="text-center p-8">
+                                    <h4 className="font-display text-2xl font-bold uppercase text-white/30 mb-2">Join the Roster</h4>
+                                    <p className="font-mono text-[10px] text-gray-500 mb-6 uppercase">Application portal open for 2024 season</p>
+                                    <Link to="/signup" className="border border-white/20 hover:bg-white hover:text-black hover:border-white transition-all duration-300 px-6 py-3 text-xs font-mono uppercase tracking-widest inline-block">
+                                        Apply Now
+                                    </Link>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Dynamic API DJs Section Header */}
+                    <div className="flex items-center gap-4 mb-8">
+                        <span className="font-mono text-[10px] text-white/40 uppercase tracking-widest">// ALL_ARTISTS</span>
+                        <div className="flex-1 h-px bg-white/10"></div>
+                        <span className="font-mono text-[10px] text-white/30">RESULTS: {filteredDjs.length}{isUsingMockData ? ' [DEMO]' : ''}</span>
+                    </div>
+
                     {loading ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10">
                             {[1, 2, 3, 4, 5, 6, 7, 8].map((i) => (
@@ -218,9 +323,8 @@ const Explore: React.FC = () => {
                             <p className="font-mono text-gray-400 uppercase tracking-widest text-sm">No DJs found matching criteria.</p>
                         </div>
                     )}
-                </main>
+                </div>
             </div>
-        </>
     );
 };
 

@@ -1,18 +1,9 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
 
 const HowItWorks: React.FC = () => {
     return (
-        <>
-            <div className="grain-overlay"></div>
-            <div className="fixed inset-0 blueprint-grid pointer-events-none z-0"></div>
-
-            <div className="relative z-10 flex flex-col min-h-screen w-full">
-                <Navbar />
-
-                <main className="flex-grow pt-32 px-6 lg:px-20 max-w-6xl mx-auto w-full pb-20">
+        <div className="px-6 lg:px-20 max-w-6xl mx-auto w-full pb-20 pt-12">
                     <div className="mb-12 flex items-center gap-4 text-xs font-display uppercase tracking-[0.3em] text-white/70 animate-fade-in-up">
                         <span className="block h-px w-12 bg-white/50"></span>
                         <span>Operations Protocol</span>
@@ -53,10 +44,7 @@ const HowItWorks: React.FC = () => {
                             Initialize Sequence
                         </Link>
                     </div>
-                </main>
-                <Footer />
-            </div>
-        </>
+        </div>
     );
 };
 

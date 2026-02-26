@@ -42,15 +42,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <>
-      <div className="grain-overlay"></div>
-      <div className="fixed inset-0 blueprint-grid pointer-events-none z-0"></div>
-
-      <div className="relative z-10 flex flex-col min-h-screen w-full items-center justify-center p-6">
-        <Link to="/" className="absolute top-8 left-8 text-white flex items-center gap-3 hover:opacity-80 transition-opacity">
-          <div className="size-6 bg-white rounded-full animate-pulse"></div>
-          <h2 className="text-lg font-display font-bold uppercase tracking-widest">DJ Night</h2>
-        </Link>
+      <div className="flex flex-col w-full items-center justify-center p-6 py-12">
 
         <div className="w-full max-w-md border border-white/10 bg-background-dark/80 backdrop-blur-xl p-8 lg:p-12 relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-white to-transparent opacity-50"></div>
@@ -131,7 +123,6 @@ const Login: React.FC = () => {
           </div>
         </div>
       </div>
-    </>
   );
 };
 

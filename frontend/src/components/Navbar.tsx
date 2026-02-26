@@ -54,8 +54,14 @@ const Navbar: React.FC<NavbarProps> = ({ isTransparent = false }) => {
         <>
             <header className={`${baseHeaderClass} ${bgClass}`}>
                 <Link to="/" className="flex items-center gap-3 group">
-                    <div className="size-6 bg-white rounded-full animate-pulse group-hover:bg-gray-300 transition-colors"></div>
-                    <h2 className="text-white text-lg font-display font-bold uppercase tracking-widest group-hover:text-gray-300 transition-colors">DJ Night</h2>
+                    <img 
+                        src="/logo.png" 
+                        alt="DJ Night Logo" 
+                        className="h-9 w-auto object-contain transition-transform duration-200 group-hover:scale-105" 
+                    />
+                    <span className="text-white text-lg font-display font-bold uppercase tracking-wider group-hover:text-gray-300 transition-colors">
+                        DJ Night
+                    </span>
                 </Link>
 
                 {/* Desktop Menu */}

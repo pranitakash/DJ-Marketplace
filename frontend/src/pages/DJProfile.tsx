@@ -109,8 +109,7 @@ const DJProfile: React.FC = () => {
     ];
 
     return (
-        <div className="bg-background-dark text-text-main font-body antialiased min-h-screen flex flex-col overflow-x-hidden selection:bg-white selection:text-black">
-            <div className="grain-overlay"></div>
+        <div className="w-full">
 
             {/* Left System Info Bar (Hidden on Mobile, Visible on LG as per template) */}
             <div className="fixed left-0 top-0 bottom-0 w-16 md:w-20 border-r border-white/10 z-40 bg-background-dark hidden lg:flex flex-col items-center justify-between py-8">
@@ -136,35 +135,8 @@ const DJProfile: React.FC = () => {
 
             <div className="relative z-10 flex flex-col min-h-screen w-full lg:pl-20">
 
-                {/* Navbar (Preserved original functionality but matching the new aesthetics) */}
-                <header className="fixed top-0 right-0 left-0 lg:left-20 z-50 flex items-center justify-between border-b border-white/10 bg-background-dark/90 backdrop-blur-md px-6 py-4">
-                    <Link to="/" className="flex items-center gap-4 group">
-                        <div className="flex flex-col">
-                            <span className="text-xs font-mono text-gray-400 leading-none mb-1">ID: {dj.id?.slice(-6).toUpperCase() || 'AX-909'}</span>
-                            <h2 className="text-white text-xl font-display font-bold uppercase tracking-widest leading-none group-hover:text-gray-300 transition-colors">DJ Night</h2>
-                        </div>
-                    </Link>
 
-                    <div className="flex items-center gap-8">
-                        <nav className="hidden md:flex gap-8">
-                            <Link to="/explore" className="text-gray-400 hover:text-white transition-colors text-xs font-mono uppercase tracking-widest">[Directory]</Link>
-                        </nav>
-                        {user ? (
-                            <div className="hidden md:flex items-center gap-4">
-                                <span className="text-white text-xs font-mono uppercase tracking-widest truncate max-w-[100px]">{user.name}</span>
-                                <Link to={`/dashboard/${user.role || 'user'}`} className="bg-white text-black hover:bg-gray-200 transition-colors px-5 py-2 text-xs font-bold font-mono uppercase tracking-widest">
-                                    [Dashboard]
-                                </Link>
-                            </div>
-                        ) : (
-                            <Link to="/login" className="bg-white text-black hover:bg-gray-200 transition-colors px-5 py-2 text-xs font-bold font-mono uppercase tracking-widest">
-                                Establish Auth
-                            </Link>
-                        )}
-                    </div>
-                </header>
-
-                <main className="flex-grow pt-[73px]">
+                <div className="flex-grow pt-0">
                     <section className="relative w-full h-[85vh] border-b border-white/10 overflow-hidden group">
                         <div className="absolute inset-0 z-0">
                             <motion.div
@@ -405,11 +377,8 @@ const DJProfile: React.FC = () => {
 
                         </div>
                     </div>
-                </main>
+                </div>
             </div>
-            {/* Footer remains global if exist or omit here since it's global layout usually, 
-                Wait, app uses global footer or page-specific? Explore has no footer. 
-                DJProfile originally just has <main>. We'll end here. */}
         </div>
     );
 };

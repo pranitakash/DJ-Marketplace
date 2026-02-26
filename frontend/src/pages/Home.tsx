@@ -1,8 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import { staticArtists } from '../data/artistsData';
 
 const itemVariants = {
   hidden: { opacity: 0, y: 40 },
@@ -24,15 +23,11 @@ const Home: React.FC = () => {
 
   return (
     <>
-      <div className="grain-overlay"></div>
-      <div className="fixed inset-0 blueprint-grid pointer-events-none z-0"></div>
-
       <div className="fixed left-6 top-0 bottom-0 w-px bg-white/10 z-40 hidden lg:block">
         <div className="w-full bg-white scroll-progress-bar origin-top"></div>
       </div>
 
       <div className="relative z-10 flex flex-col min-h-screen w-full">
-        <Navbar isTransparent={true} />
 
         <main className="flex-grow pl-0 lg:pl-20">
           <section className="relative h-screen w-full flex items-center justify-center overflow-hidden border-b border-white/10">
@@ -118,89 +113,36 @@ const Home: React.FC = () => {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10">
-              {/* Artist Card 1 */}
-              <Link to="/explore" className="group relative aspect-[3/4] overflow-hidden bg-black block cursor-pointer hover-butter border border-transparent hover:border-white/20">
-                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAHuwi1OBEG19lfsbI5Jww52LdyDiuRBk8fKyXHW12NjgGh211Vsnnz1RzWOU0f0lgj3s0R_F6GQCRVsvJnzZ2WOADQ0xQtI-nGaSJa7ainqmEjWOrsyfGN2YubxK0NYnMiCexrAuCOzOuq-lxcQobBL7BxOjKuXSx284_lNFudA_VBMotevMgo0mqRybbdjLO0cElp05z_-rbUGxGoaRSYq_sqCU6AFtf_m7Yj2S5lfvGXd-cPJEaIt_fPpHCjf5P_kIZ9EAMihMc")' }}></div>
-                <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500"></div>
-                <div className="absolute inset-0 flex flex-col justify-between p-6 opacity-100 transition-opacity duration-300">
-                  <div className="flex justify-between items-start">
-                    <span className="font-mono text-xs border border-white/30 px-2 py-1 rounded-full backdrop-blur-sm">01</span>
-                    <span className="material-symbols-outlined text-white rotate-45 group-hover:rotate-0 transition-transform duration-500">arrow_outward</span>
-                  </div>
-                  <div className="translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                    <h3 className="text-3xl font-display font-bold uppercase leading-none mb-2">DJ Axon</h3>
-                    <div className="h-0 overflow-hidden group-hover:h-auto transition-all duration-500">
-                      <p className="text-sm font-mono text-gray-300 pt-2 border-t border-white/20 mt-2">
-                        Techno / Berlin<br />
-                        Rate: €€€
-                      </p>
+              {staticArtists.slice(0, 4).map((artist, idx) => (
+                <Link 
+                  key={artist.slug}
+                  to={`/artist/${artist.slug}`} 
+                  className="group relative aspect-[3/4] overflow-hidden bg-black block cursor-pointer hover-butter border border-transparent hover:border-white/20"
+                >
+                  <div 
+                    className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" 
+                    style={{ backgroundImage: `url("${artist.imageUrl || 'https://images.unsplash.com/photo-1571266028243-3716f02d2d2e?q=80&w=2071&auto=format&fit=crop'}")` }}
+                  ></div>
+                  <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500"></div>
+                  <div className="absolute inset-0 flex flex-col justify-between p-6 opacity-100 transition-opacity duration-300">
+                    <div className="flex justify-between items-start">
+                      <span className="font-mono text-xs border border-white/30 px-2 py-1 rounded-full backdrop-blur-sm">
+                        {String(idx + 1).padStart(2, '0')}
+                      </span>
+                      <span className="material-symbols-outlined text-white rotate-45 group-hover:rotate-0 transition-transform duration-500">arrow_outward</span>
+                    </div>
+                    <div className="translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
+                      <h3 className="text-3xl font-display font-bold uppercase leading-none mb-2">{artist.name}</h3>
+                      <div className="h-0 overflow-hidden group-hover:h-auto transition-all duration-500">
+                        <p className="text-sm font-mono text-gray-300 pt-2 border-t border-white/20 mt-2">
+                          {artist.genre} / {artist.location.split(',')[0]}<br />
+                          Rate: {artist.rate}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
-
-              {/* Artist Card 2 */}
-              <Link to="/explore" className="group relative aspect-[3/4] overflow-hidden bg-black block cursor-pointer hover-butter border border-transparent hover:border-white/20">
-                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAtTfCAokDmRpVmxug0R8vhH6t-R78GS5NRG4HlhjDKAADQ1VK9_aUG7cSccD4r7kcDh_RaWhLuHfRgbpCUTeFlNnqfKabEgG9hnDTsv2q6d7m9YTZL4dEcA0KFf0hdgVtyn1sslDFpR6KUkxhGAsGlEGuw5BwRjV6fCGlP9G_0R1yUmOmrndJI3Digq_lyGjd-BkNLlXEFDL0Q7qxz0FGC7kqpGHXX_aESfZmabH8xjNm3wc_BXhX7fUoFR6U2Rl_ESOr78P7hVuw")' }}></div>
-                <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500"></div>
-                <div className="absolute inset-0 flex flex-col justify-between p-6 opacity-100 transition-opacity duration-300">
-                  <div className="flex justify-between items-start">
-                    <span className="font-mono text-xs border border-white/30 px-2 py-1 rounded-full backdrop-blur-sm">02</span>
-                    <span className="material-symbols-outlined text-white rotate-45 group-hover:rotate-0 transition-transform duration-500">arrow_outward</span>
-                  </div>
-                  <div className="translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                    <h3 className="text-3xl font-display font-bold uppercase leading-none mb-2">Vera Ló</h3>
-                    <div className="h-0 overflow-hidden group-hover:h-auto transition-all duration-500">
-                      <p className="text-sm font-mono text-gray-300 pt-2 border-t border-white/20 mt-2">
-                        Deep House / Zurich<br />
-                        Rate: €€
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-
-              {/* Artist Card 3 */}
-              <Link to="/explore" className="group relative aspect-[3/4] overflow-hidden bg-black block cursor-pointer hover-butter border border-transparent hover:border-white/20">
-                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAuvf3GnbjgmslXy54fNhrm3akAB-gR1ZhHt8Ok86N1nsJIQfx0h7nDMoIqfb-efGAEcWYatLv6ScklCA49hUTlvfsNWZWgn17D_loaBFjUbAwlifMhjC-iiFwS2rBdP2d_m2bYBEuJfJQgpSuMN2ynt3b9ioWKUgaT5SBYBFKaGJOVGjrB8QL7yKrlhJfjs_9sKTNVVmn_XgNiWfiNgFOJK3sT-P_yJzLFNjXZSZ5T5zctw5Z8qjljQLqvbuGFbQiUtpKol400gfg")' }}></div>
-                <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500"></div>
-                <div className="absolute inset-0 flex flex-col justify-between p-6 opacity-100 transition-opacity duration-300">
-                  <div className="flex justify-between items-start">
-                    <span className="font-mono text-xs border border-white/30 px-2 py-1 rounded-full backdrop-blur-sm">03</span>
-                    <span className="material-symbols-outlined text-white rotate-45 group-hover:rotate-0 transition-transform duration-500">arrow_outward</span>
-                  </div>
-                  <div className="translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                    <h3 className="text-3xl font-display font-bold uppercase leading-none mb-2">The Collective</h3>
-                    <div className="h-0 overflow-hidden group-hover:h-auto transition-all duration-500">
-                      <p className="text-sm font-mono text-gray-300 pt-2 border-t border-white/20 mt-2">
-                        Minimal / London<br />
-                        Rate: €€€€
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </Link>
-
-              {/* Artist Card 4 */}
-              <Link to="/explore" className="group relative aspect-[3/4] overflow-hidden bg-black block cursor-pointer hover-butter border border-transparent hover:border-white/20">
-                <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAeCitjeYDV5X9zJzuc2i-aLScgSBhQ_ewixST0zeHJ7W_CQYwGWAohf_Hc0nMt2spxKsCtmAYmSuy-XiB4JjEJOZZySb87HHQtFyc3fVWnpJIFK5IqmqQNgaMNz3tV99GFVwUroRzm8KkFkrtw8545I8OizSGg_ou4DhpTFWIf10aj3UiAObLIcVHkn43SmPCN-bqWmecPh-Bq7Awnk0FaAzY7U7kjcJ0DbviSLW62LQlDCfaHyt5lBXUdXj4Za8B4H22KMwXSvY")' }}></div>
-                <div className="absolute inset-0 bg-black/40 group-hover:bg-transparent transition-colors duration-500"></div>
-                <div className="absolute inset-0 flex flex-col justify-between p-6 opacity-100 transition-opacity duration-300">
-                  <div className="flex justify-between items-start">
-                    <span className="font-mono text-xs border border-white/30 px-2 py-1 rounded-full backdrop-blur-sm">04</span>
-                    <span className="material-symbols-outlined text-white rotate-45 group-hover:rotate-0 transition-transform duration-500">arrow_outward</span>
-                  </div>
-                  <div className="translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                    <h3 className="text-3xl font-display font-bold uppercase leading-none mb-2">Mina K</h3>
-                    <div className="h-0 overflow-hidden group-hover:h-auto transition-all duration-500">
-                      <p className="text-sm font-mono text-gray-300 pt-2 border-t border-white/20 mt-2">
-                        Experimental / Tokyo<br />
-                        Rate: €€
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </Link>
+                </Link>
+              ))}
             </div>
           </section>
 
@@ -247,7 +189,7 @@ const Home: React.FC = () => {
 
               <div className="relative h-[600px] border border-white/10 p-2">
                 <div className="h-full w-full relative overflow-hidden bg-[#111]">
-                  <div className="absolute inset-0 bg-cover bg-center grayscale contrast-125" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAB8HHQXY76XplmpfU7xUXHwmE-ID5EbFvbxFD4jgQxOJE7x5xUcqi_5AfHzxVrr29Y2DVuj4bQkQQbM2qsGME3lV0OoCHtRlKHGov-JO58CTBzDufSi74MoPOFcUxVyZF1fLoAkh88L972POL6o_a41YXnB3EjTi4xGHiC6oJtOK2y_8F8XvXZ2iZbY6K33APfFYt1UhpeF2uMK59NDhgTzWQnzPLCUSUQSwULlosLhJR54DkYOIPCNHbyW4xoWDCuO9gDbIKIKC8")' }}></div>
+                  <div className="absolute inset-0 bg-cover bg-center grayscale contrast-125" style={{ backgroundImage: 'url("https://lh3.googleusercontent.com/aida-public/AB6AXuAB8HHQXY76XplmpfU7xUXHwmE-ID5EbFvbxFD4jgQxOJE7x5xUcqi_5AfHzxVrr29Y2DVuj4bQkQQbM2qsGME3lV0OoCHtRlKHGov-JO58CTBzDufSi74MoPOFcUxVyZF1fLoAkh88L972POL6o_a41YXnB3EjTi4xGHiC6oJtOK2y_8F8XvXZ2iZbY6K33APeFYt1UhpeF2uMK59NDhgTzWQnzPLCUSUQSwULlosLhJR54DkYOIPCNHbyW4xoWDCuO9gDbIKIKC8")' }}></div>
                   <div className="absolute top-4 left-4 border border-white/30 bg-black/50 backdrop-blur px-3 py-1">
                     <span className="font-mono text-[10px] text-white uppercase tracking-widest">● LIVE SIGNAL</span>
                   </div>
@@ -266,7 +208,6 @@ const Home: React.FC = () => {
             </div>
           </section>
 
-          <Footer />
         </main>
       </div>
     </>

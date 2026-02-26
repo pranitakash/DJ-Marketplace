@@ -15,6 +15,8 @@ import AboutUs from './pages/AboutUs';
 import ContactUs from './pages/ContactUs';
 import HowItWorks from './pages/HowItWorks';
 import SetupInfo from './pages/SetupInfo';
+import ArtistProfile from './pages/ArtistProfile';
+import Layout from './components/Layout';
 
 // Protected Route Wrapper
 const ProtectedRoute = ({ children, allowedRoles }: { children: React.ReactNode, allowedRoles?: string[] }) => {
@@ -40,6 +42,7 @@ const AnimatedRoutes = () => {
         <Route path="/" element={<PageTransition><Home /></PageTransition>} />
         <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
         <Route path="/signup" element={<PageTransition><Signup /></PageTransition>} />
+        <Route path="/artist/:slug" element={<PageTransition><ArtistProfile /></PageTransition>} />
 
         {/* Protected Marketplace Route */}
         <Route path="/explore" element={<ProtectedRoute><PageTransition><Explore /></PageTransition></ProtectedRoute>} />
@@ -81,11 +84,22 @@ const PageTransition = ({ children }: { children: React.ReactNode }) => {
   );
 };
 
+const AppContent: React.FC = () => {
+  const location = useLocation();
+  const isHome = location.pathname === '/';
+
+  return (
+    <Layout isTransparentNavbar={isHome} mainClassName={isHome ? "pt-0" : "pt-20"}>
+      <AnimatedRoutes />
+    </Layout>
+  );
+};
+
 const App: React.FC = () => {
   return (
     <AuthProvider>
       <Router>
-        <AnimatedRoutes />
+        <AppContent />
       </Router>
     </AuthProvider>
   );
