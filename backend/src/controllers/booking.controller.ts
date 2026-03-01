@@ -52,17 +52,13 @@ export const updateBookingStatus = async (req: Request, res: Response) => {
     const { bookingId } = req.params as { bookingId: string };
     const { status } = req.body as { status: string };
     const io = getIO();
+    const uid = req.user?.uid;
 
-    if (!bookingId) {
-      return res.status(400).json({ message: "Booking ID is required" })
+    if (!bookingId || !status) {
+      return res.status(400).json({ message: "Booking ID and status are required" });
     }
 
-    if (!status) {
-      return res.status(400).json({ message: "Status is required" })
-    }
-
-    const allowedStatuses = ["pending", "confirmed", "completed", "cancelled"];
-
+    const allowedStatuses = ["confirmed", "cancelled", "completed"];
     if (!allowedStatuses.includes(status)) {
       return res.status(400).json({ message: "Invalid status value" });
     }
@@ -75,25 +71,79 @@ export const updateBookingStatus = async (req: Request, res: Response) => {
     }
 
     const bookingData = bookingDoc.data();
+    if (!bookingData) return res.status(404).json({ message: "Data missing" });
 
-    await bookingRef.update({ status });
+    // Security: Only the assigned DJ can update status (except for specific user cancels handled elsewhere)
+    if (bookingData.djId !== uid) {
+      return res.status(403).json({ message: "Unauthorized: Only the assigned DJ can perform this action" });
+    }
 
-    io.to(`dj_${bookingData?.djId}`).emit("booking_updated", {
-      bookingId,
-      status,
+    // 1. Time Constraint Check: 5 hours before event
+    const eventDate = new Date(bookingData.targetDate);
+    const now = new Date();
+    const hoursDiff = (eventDate.getTime() - now.getTime()) / (1000 * 60 * 60);
+
+    if (hoursDiff < 5) {
+      return res.status(400).json({
+        message: "Action forbidden: Bookings cannot be modified within 5 hours of the event start time."
+      });
+    }
+
+    // Prevent duplicate actions
+    if (bookingData.status === status) {
+      return res.status(400).json({ message: `Booking is already ${status}` });
+    }
+
+    // 2. Handle Rejection / Refund
+    if (status === "cancelled" && bookingData.status === "pending") {
+      if (bookingData.paymentId) {
+        try {
+          await refundRazorpayPayment(bookingData.paymentId, bookingData.totalAmount);
+          console.log(`Refund initiated for booking ${bookingId}`);
+        } catch (error: any) {
+          return res.status(500).json({
+            message: "Failed to process refund. Booking status not updated.",
+            error: error.message
+          });
+        }
+      }
+    }
+
+    // 3. Atomic Updates across Collections
+    const updateTime = Timestamp.now();
+    const batch = db.batch();
+
+    // Update main booking
+    batch.update(bookingRef, { status, updatedAt: updateTime });
+
+    // Update user sub-collection
+    const userEventRef = db.collection("users").doc(bookingData.userId).collection("events").doc(bookingId);
+    batch.update(userEventRef, { status });
+
+    // Update DJ sub-collection
+    const djRequestRef = db.collection("djs").doc(bookingData.djId).collection("requests").doc(bookingId);
+    batch.update(djRequestRef, { status });
+
+    await batch.commit();
+
+    // 4. Real-time Notifications
+    const signalData = { bookingId, status };
+    io.to(`dj_${bookingData.djId}`).emit("booking_updated", signalData);
+    io.to(`user_${bookingData.userId}`).emit("booking_updated", signalData);
+
+    return res.json({
+      success: true,
+      message: `Booking ${status} successfully`,
+      refunded: status === "cancelled" && !!bookingData.paymentId
     });
-
-    io.to(`user_${bookingData?.userId}`).emit("booking_updated", {
-      bookingId,
-      status,
-    });
-
-    return res.json({ message: "Booking updated successfully" });
   } catch (error) {
-    console.log(error);
-    res.status(500).json({ message: "Error updating booking" });
+    console.error("Error updating booking status:", error);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
+
+// Also import the refund service
+import { refundRazorpayPayment } from "../services/payment.service.js";
 
 export const cancelBooking = async (req: Request, res: Response) => {
   try {

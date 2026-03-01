@@ -191,3 +191,9 @@
 .react-datepicker__triangle {
   display: none !important;
 }
+
+/* Ensure Portal popups are on top of all other layers */
+#root-portal {
+  position: relative;
+  z-index: 9999;
+}

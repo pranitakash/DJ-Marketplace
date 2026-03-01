@@ -37,7 +37,7 @@ const AnimatedRoutes = () => {
 
   return (
     <AnimatePresence mode="wait">
-      <Routes location={location} key={location.pathname}>
+      <Routes location={location} key="animated-routes">
         {/* Public Routes */}
         <Route path="/" element={<PageTransition><Home /></PageTransition>} />
         <Route path="/login" element={<PageTransition><Login /></PageTransition>} />
@@ -49,7 +49,7 @@ const AnimatedRoutes = () => {
         <Route path="/dj/:id" element={<ProtectedRoute><PageTransition><DJProfile /></PageTransition></ProtectedRoute>} />
         <Route path="/setup-info" element={<ProtectedRoute><PageTransition><SetupInfo /></PageTransition></ProtectedRoute>} />
 
-        {/* Protected Dashboard Routes */}
+         {/* Protected Dashboard Routes */}
         <Route path="/dashboard/user" element={<ProtectedRoute allowedRoles={['user', 'admin']}><PageTransition><UserDashboard /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/dj" element={<ProtectedRoute allowedRoles={['dj', 'admin']}><PageTransition><DJDashboard /></PageTransition></ProtectedRoute>} />
         <Route path="/dashboard/admin" element={<ProtectedRoute allowedRoles={['admin']}><PageTransition><AdminDashboard /></PageTransition></ProtectedRoute>} />

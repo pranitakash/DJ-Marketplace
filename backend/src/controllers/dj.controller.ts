@@ -3,36 +3,87 @@ import { db } from "../config/firebase.js";
 
 export const createDJ = async (req: Request, res: Response) => {
     try {
-        const data = req.body;
+        const { genre, hourlyRate, bio, imageUrl, location, slug } = req.body;
         const uid = req.user?.uid;
 
         if (!uid) {
             return res.status(401).json({ message: "Unauthorized" });
         }
 
-        const djRef = db.collection("djs").doc(uid);
-        const djDoc = await djRef.get();
-
-        const updateData: any = {
-            ...data,
-            id: uid, // ensure the id is part of the data
-            updatedAt: new Date(),
-        };
-
-        if (!djDoc.exists) {
-            updateData.createdAt = new Date();
+        if (!slug || !location) {
+            return res.status(400).json({ message: "Location and unique slug are required" });
         }
 
-        await djRef.set(updateData, { merge: true });
+        // Validate slug format
+        const slugRegex = /^[a-z0-9-]+$/;
+        if (!slugRegex.test(slug)) {
+            return res.status(400).json({ message: "Slug must be lowercase alphanumeric and hyphens only" });
+        }
 
-        // Best approach is just to ensure it upserts nicely.
-        const doc = await djRef.get();
+        const result = await db.runTransaction(async (transaction) => {
+            const djRef = db.collection("djs").doc(uid);
+            const slugRef = db.collection("slugs").doc(slug);
+            const statsRef = db.collection("metadata").doc("dj_stats");
 
-        res.status(200).json({ message: "DJ profile updated successfully", id: uid, data: { id: uid, ...doc.data() } });
+            const djDoc = await transaction.get(djRef);
+            const slugDoc = await transaction.get(slugRef);
+            const statsDoc = await transaction.get(statsRef);
 
-    } catch (error) {
-        console.log("Error updating DJ:", error);
-        res.status(500).json({ message: "Error updating DJ profile" });
+            // 1. Slug uniqueness and change check
+            const oldSlug = djDoc.data()?.slug;
+            if (slugDoc.exists && slugDoc.data()?.userId !== uid) {
+                throw new Error("Slug already taken");
+            }
+
+            // If slug changed, delete the old slug registry entry
+            if (oldSlug && oldSlug !== slug) {
+                const oldSlugRef = db.collection("slugs").doc(oldSlug);
+                transaction.delete(oldSlugRef);
+            }
+
+            let bpm = djDoc.data()?.bpm;
+            let lastBpm = statsDoc.exists ? statsDoc.data()?.lastBpm : 140;
+
+            // 2. BPM increment for new profiles
+            if (!bpm) {
+                bpm = lastBpm + 1;
+                transaction.set(statsRef, { lastBpm: bpm }, { merge: true });
+            }
+
+            const updateData: any = {
+                genre,
+                hourlyRate: Number(hourlyRate),
+                bio,
+                imageUrl,
+                location,
+                slug,
+                bpm,
+                userId: uid,
+                id: uid,
+                updatedAt: new Date(),
+            };
+
+            if (!djDoc.exists) {
+                updateData.createdAt = new Date();
+            }
+
+            // 3. Commit changes
+            transaction.set(djRef, updateData, { merge: true });
+            transaction.set(slugRef, { userId: uid, slug }, { merge: true });
+
+            return { id: uid, ...updateData, bpm };
+        });
+
+        res.status(200).json({
+            message: "DJ profile updated successfully",
+            id: uid,
+            data: result
+        });
+
+    } catch (error: any) {
+        console.error("Error updating DJ:", error);
+        const status = error.message === "Slug already taken" ? 400 : 500;
+        res.status(status).json({ message: error.message || "Error updating DJ profile" });
     }
 }
 

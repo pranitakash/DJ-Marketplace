@@ -3,117 +3,61 @@ import { Link } from 'react-router-dom';
 import api from '../services/api';
 import CustomDropdown from '../components/CustomDropdown';
 import { staticArtists } from '../data/artistsData';
+import { resolveImageUrl } from '../utils/imageUtils';
 
 interface DJ {
-    id?: string;
-    _id?: string;
+    id: string;
     name: string;
     genre: string;
     hourlyRate: number;
-    rating: number;
+    rating?: number;
     imageUrl?: string;
+    location?: string;
     bio?: string;
+    bpm?: string;
+    createdAt?: any;
 }
-
-// ── Mock Data (fallback when API returns no results) ──────────────────────
-const MOCK_DJS: DJ[] = [
-    {
-        id: 'mock_dj_1',
-        name: 'DJ Axon',
-        genre: 'Techno',
-        hourlyRate: 150,
-        rating: 4.8,
-        imageUrl: 'https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?q=80&w=2070&auto=format&fit=crop',
-        bio: 'High-energy techno and warehouse specialist. Known for relentless 4-hour marathon sets.'
-    },
-    {
-        id: 'mock_dj_2',
-        name: 'Priya Sonic',
-        genre: 'Deep House',
-        hourlyRate: 120,
-        rating: 4.6,
-        imageUrl: 'https://images.unsplash.com/photo-1508854710579-5cecc3a9ff17?q=80&w=2070&auto=format&fit=crop',
-        bio: 'Ethereal deep house architect weaving hypnotic basslines and atmospheric textures.'
-    },
-    {
-        id: 'mock_dj_3',
-        name: 'KRNL',
-        genre: 'Industrial',
-        hourlyRate: 200,
-        rating: 4.9,
-        imageUrl: 'https://images.unsplash.com/photo-1571266028243-3716f02d2d2e?q=80&w=2071&auto=format&fit=crop',
-        bio: 'Raw industrial soundscapes fused with pounding kick drums. Not for the faint-hearted.'
-    },
-    {
-        id: 'mock_dj_4',
-        name: 'Neon Vox',
-        genre: 'Trance',
-        hourlyRate: 100,
-        rating: 4.5,
-        imageUrl: 'https://images.unsplash.com/photo-1516450360452-9312f5e86fc7?q=80&w=2070&auto=format&fit=crop',
-        bio: 'Uplifting trance voyager taking crowds on euphoric sonic odysseys since 2016.'
-    },
-    {
-        id: 'mock_dj_5',
-        name: 'Bass Theory',
-        genre: 'Drum & Bass',
-        hourlyRate: 130,
-        rating: 4.7,
-        imageUrl: 'https://images.unsplash.com/photo-1571935441289-db81ce9a47e1?q=80&w=2070&auto=format&fit=crop',
-        bio: 'Liquid rollers to heavyweight neuro. Versatile DnB selector with a global following.'
-    },
-    {
-        id: 'mock_dj_6',
-        name: 'Mira Dusk',
-        genre: 'Minimal',
-        hourlyRate: 110,
-        rating: 4.4,
-        imageUrl: 'https://images.unsplash.com/photo-1598387181032-a3103a2db5b3?q=80&w=2076&auto=format&fit=crop',
-        bio: 'Less is more. Surgical precision in stripped-back grooves and micro-detailed percussion.'
-    }
-];
 
 
 const Explore: React.FC = () => {
     const [djs, setDjs] = useState<DJ[]>([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [genreFilter, setGenreFilter] = useState<string>('all');
     const [sortBy, setSortBy] = useState<string>('rating-desc');
     const [location, setLocation] = useState<string>('');
     const [minPrice, setMinPrice] = useState<string>('');
     const [maxPrice, setMaxPrice] = useState<string>('');
 
-
-
-    const fetchDjs = async () => {
+    const fetchDjs = async (signal?: AbortSignal) => {
         setLoading(true);
+        setError(null);
         try {
-            const params: any = {};
+            const params: Record<string, string> = {};
             if (location) params.location = location;
             if (minPrice) params.minPrice = minPrice;
             if (maxPrice) params.maxPrice = maxPrice;
 
-            const response = await api.get('/djs', { params });
+            const response = await api.get('/djs', { params, signal });
             const data = response.data.data || response.data;
             setDjs(Array.isArray(data) ? data : []);
-        } catch (error) {
-            console.error('Failed to fetch DJs:', error);
+        } catch (err: any) {
+            if (err.name === 'CanceledError' || err.code === 'ERR_CANCELED') return;
+            setError('Failed to load DJs. Please try again.');
         } finally {
             setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchDjs();
+        const controller = new AbortController();
+        fetchDjs(controller.signal);
+        return () => controller.abort();
     }, []);
 
-    // Use API data if available, otherwise fall back to mock data
-    const displayedDjs = djs.length > 0 ? djs : MOCK_DJS;
-    const isUsingMockData = djs.length === 0;
+    const genres = ['all', ...Array.from(new Set(djs.map((dj) => dj.genre?.toLowerCase())))].filter(Boolean);
 
-    const genres = ['all', ...Array.from(new Set(displayedDjs.map((dj) => dj.genre?.toLowerCase())))].filter(Boolean);
-
-    let filteredDjs = displayedDjs.filter((dj) => {
+    let filteredDjs = djs.filter((dj) => {
         if (genreFilter === 'all') return true;
         return dj.genre?.toLowerCase() === genreFilter;
     });
@@ -150,20 +94,20 @@ const Explore: React.FC = () => {
                                 />
                                 <input
                                     type="number"
-                                    placeholder="Min $"
+                                    placeholder="Min ₹"
                                     value={minPrice}
                                     onChange={(e) => setMinPrice(e.target.value)}
                                     className="bg-black/50 border border-white/20 text-white px-4 py-3 font-mono text-sm uppercase focus:outline-none focus:border-white w-full sm:w-28 placeholder:text-gray-600"
                                 />
                                 <input
                                     type="number"
-                                    placeholder="Max $"
+                                    placeholder="Max ₹"
                                     value={maxPrice}
                                     onChange={(e) => setMaxPrice(e.target.value)}
                                     className="bg-black/50 border border-white/20 text-white px-4 py-3 font-mono text-sm uppercase focus:outline-none focus:border-white w-full sm:w-28 placeholder:text-gray-600"
                                 />
                                 <button
-                                    onClick={fetchDjs}
+                                    onClick={() => fetchDjs()}
                                     className="bg-white text-black font-display font-bold uppercase tracking-widest text-xs px-6 py-3 hover:bg-gray-200 transition-colors"
                                 >
                                     Apply
@@ -196,7 +140,7 @@ const Explore: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Featured Static Artists from code3.html */}
+                    {/* Featured Static Artists */}
                     <div className="mb-16">
                         <div className="flex items-center gap-4 mb-8">
                             <span className="font-mono text-[10px] text-white/40 uppercase tracking-widest">// FEATURED_ROSTER</span>
@@ -255,7 +199,7 @@ const Explore: React.FC = () => {
                                 <div className="absolute inset-0 blueprint-grid opacity-20"></div>
                                 <div className="text-center p-8">
                                     <h4 className="font-display text-2xl font-bold uppercase text-white/30 mb-2">Join the Roster</h4>
-                                    <p className="font-mono text-[10px] text-gray-500 mb-6 uppercase">Application portal open for 2024 season</p>
+                                    <p className="font-mono text-[10px] text-gray-500 mb-6 uppercase">Application portal open for 2026 season</p>
                                     <Link to="/signup" className="border border-white/20 hover:bg-white hover:text-black hover:border-white transition-all duration-300 px-6 py-3 text-xs font-mono uppercase tracking-widest inline-block">
                                         Apply Now
                                     </Link>
@@ -264,11 +208,11 @@ const Explore: React.FC = () => {
                         </div>
                     </div>
 
-                    {/* Dynamic API DJs Section Header */}
+                    {/* Dynamic API DJs Section */}
                     <div className="flex items-center gap-4 mb-8">
                         <span className="font-mono text-[10px] text-white/40 uppercase tracking-widest">// ALL_ARTISTS</span>
                         <div className="flex-1 h-px bg-white/10"></div>
-                        <span className="font-mono text-[10px] text-white/30">RESULTS: {filteredDjs.length}{isUsingMockData ? ' [DEMO]' : ''}</span>
+                        <span className="font-mono text-[10px] text-white/30">RESULTS: {filteredDjs.length}</span>
                     </div>
 
                     {loading ? (
@@ -281,13 +225,23 @@ const Explore: React.FC = () => {
                                 </div>
                             ))}
                         </div>
+                    ) : error ? (
+                        <div className="py-20 text-center border border-red-500/20 bg-red-500/5 backdrop-blur-sm">
+                            <p className="font-mono text-red-400 uppercase tracking-widest text-sm mb-4">{error}</p>
+                            <button
+                                onClick={() => fetchDjs()}
+                                className="border border-white/20 hover:bg-white hover:text-black transition-all duration-300 px-6 py-3 text-xs font-mono uppercase tracking-widest"
+                            >
+                                Retry
+                            </button>
+                        </div>
                     ) : filteredDjs.length > 0 ? (
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-px bg-white/10 border border-white/10">
                             {filteredDjs.map((dj, idx) => (
-                                <Link to={`/dj/${dj.id || dj._id}`} key={dj.id || dj._id || idx} className="group relative aspect-[3/4] overflow-hidden bg-black block">
+                                <Link to={`/dj/${dj.id}`} key={dj.id} className="group relative aspect-[3/4] overflow-hidden bg-black block">
                                     <div
                                         className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0"
-                                        style={{ backgroundImage: `url("${dj.imageUrl || 'https://images.unsplash.com/photo-1571266028243-3716f02d2d2e?q=80&w=2071&auto=format&fit=crop'}")` }}
+                                        style={{ backgroundImage: `url("${resolveImageUrl(dj.imageUrl)}")` }}
                                     ></div>
                                     <div className="absolute inset-0 bg-black/60 group-hover:bg-black/20 transition-colors duration-500"></div>
 
@@ -310,7 +264,7 @@ const Explore: React.FC = () => {
                                             <div className="h-0 overflow-hidden group-hover:h-auto transition-all duration-500">
                                                 <p className="text-sm font-mono text-gray-300 pt-2 border-t border-white/20 mt-2">
                                                     {dj.genre || 'Open Format'}<br />
-                                                    Rate: ${dj.hourlyRate || 0}/hr
+                                                    Rate: ₹{(dj.hourlyRate || 0).toLocaleString('en-IN')}/hr
                                                 </p>
                                             </div>
                                         </div>
@@ -320,7 +274,7 @@ const Explore: React.FC = () => {
                         </div>
                     ) : (
                         <div className="py-20 text-center border border-white/10 bg-black/50 backdrop-blur-sm">
-                            <p className="font-mono text-gray-400 uppercase tracking-widest text-sm">No DJs found matching criteria.</p>
+                            <p className="font-mono text-gray-400 uppercase tracking-widest text-sm">No DJs available at the moment.</p>
                         </div>
                     )}
                 </div>

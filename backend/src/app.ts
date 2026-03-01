@@ -10,6 +10,7 @@ import { globalLimiter, authLimiter } from "./middleware/rateLimiter.js";
 import { setupSwagger } from "./swagger.js";
 import path from "path";
 import { fileURLToPath } from "url";
+import paymentRoutes from "./routes/payment.routes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,6 +28,7 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/auth", authLimiter, authRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/upload", uploadRoutes);
+app.use("/api/payment", paymentRoutes);
 app.use(errorHandler);
 setupSwagger(app);
 export default app;

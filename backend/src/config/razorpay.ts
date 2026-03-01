@@ -1,0 +1,16 @@
+import Razorpay from "razorpay";
+
+let razorpayInstance: Razorpay | null = null;
+
+export const getRazorpayInstance = () => {
+    if (!razorpayInstance) {
+        if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+            throw new Error("Razorpay environment variables (RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET) are missing.");
+        }
+        razorpayInstance = new Razorpay({
+            key_id: process.env.RAZORPAY_KEY_ID,
+            key_secret: process.env.RAZORPAY_KEY_SECRET,
+        });
+    }
+    return razorpayInstance;
+};

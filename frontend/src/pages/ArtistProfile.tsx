@@ -1,25 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { motion } from 'framer-motion';
-import { getArtistBySlug, staticArtists } from '../data/artistsData';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
+import CustomDropdown from '../components/CustomDropdown';
+import { createOrder, verifyPayment, loadRazorpayScript } from '../services/payment';
+import type { RazorpayPaymentResponse, PaymentStatus } from '../types/payment';
+import { useArtist } from '../hooks/useArtist';
+import { resolveImageUrl } from '../utils/imageUtils';
+import api from '../services/api';
+import type { ArtistData } from '../types/artist';
+
+const RAZORPAY_KEY = import.meta.env.VITE_RAZORPAY_KEY_ID;
 
 const ArtistProfile: React.FC = () => {
     const { slug } = useParams<{ slug: string }>();
-    const artist = getArtistBySlug(slug || '');
+    const { artist, loading, error } = useArtist(slug);
     const { user } = useAuth();
     const navigate = useNavigate();
 
-    const [bookingDate, setBookingDate] = useState('');
-    const [duration, setDuration] = useState('2');
-    const [location, setLocation] = useState('');
-    const [bookingStatus, setBookingStatus] = useState<'idle' | 'success'>('idle');
+    const [bookingForm, setBookingForm] = useState({
+        date: null as Date | null,
+        duration: '2',
+        location: '',
+    });
+    const [paymentStatus, setPaymentStatus] = useState<PaymentStatus>('idle');
+    const [paymentError, setPaymentError] = useState<string | null>(null);
+    const [showSuccessToast, setShowSuccessToast] = useState(false);
+    
+    // State for dynamic related DJs
+    const [relatedDjs, setRelatedDjs] = useState<ArtistData[]>([]);
 
-    if (!artist) {
+    useEffect(() => {
+        const fetchRelated = async () => {
+            try {
+                const response = await api.get('/djs?limit=4');
+                const data = response.data.data || response.data;
+                const filtered = Array.isArray(data) ? data.filter((d: any) => d.id !== artist?.id).slice(0, 3) : [];
+                setRelatedDjs(filtered);
+            } catch (err) {
+                console.error("Failed to fetch related DJs");
+            }
+        };
+        if (artist) {
+            fetchRelated();
+        }
+    }, [artist?.id]);
+
+    if (loading) {
         return (
-            <div className="flex flex-col items-center justify-center text-white font-mono gap-4 py-20">
+            <div className="min-h-screen bg-background-dark flex items-center justify-center">
+                <div className="size-8 bg-white rounded-full animate-ping"></div>
+            </div>
+        );
+    }
+
+    if (error || !artist) {
+        return (
+            <div className="flex flex-col items-center justify-center text-white font-mono gap-4 py-20 min-h-screen">
                 <span className="text-6xl font-display font-bold text-white/10">404</span>
-                <span>Artist not found.</span>
+                <span>{error || 'Artist not found.'}</span>
                 <Link to="/explore" className="border border-white/30 px-6 py-2 text-xs uppercase tracking-widest hover:bg-white hover:text-black transition-all">
                     Back to Directory
                 </Link>
@@ -27,29 +68,136 @@ const ArtistProfile: React.FC = () => {
         );
     }
 
+    const RATE_PER_HOUR = artist.hourlyRate || 5000;
+    const numericDuration = parseInt(bookingForm.duration) || 0;
+    const totalAmount = numericDuration * RATE_PER_HOUR;
+    const isDurationValid = numericDuration > 0;
+
+    const durationOptions = [
+        { value: '1', label: '1 Hour' },
+        { value: '2', label: '2 Hours' },
+        { value: '3', label: '3 Hours' },
+        { value: '4', label: '4 Hours' },
+        { value: '5', label: '5 Hours' },
+        { value: '6', label: '6 Hours' },
+        { value: '8', label: '8 Hours' },
+        { value: '10', label: '10 Hours' },
+    ];
+
+    const formatCurrency = (amount: number) => {
+        return new Intl.NumberFormat('en-IN', {
+            style: 'currency',
+            currency: 'INR',
+            maximumFractionDigits: 0
+        }).format(amount);
+    };
+
     const fadeInUp = {
         hidden: { opacity: 0, y: 30 },
         visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" as const } }
     };
 
-    const handleBooking = (e: React.FormEvent) => {
+    const handleBooking = async (e: React.FormEvent) => {
         e.preventDefault();
+
         if (!user) {
+            setBookingForm({
+                date: null,
+                duration: '2',
+                location: '',
+            });
             navigate('/login');
             return;
         }
-        setBookingStatus('success');
-        setBookingDate('');
-        setLocation('');
-        setDuration('2');
-    };
+        if (!isDurationValid || !bookingForm.date || !bookingForm.location) return;
 
-    // Get other artists for the "More Artists" section
-    const otherArtists = staticArtists.filter((a) => a.slug !== artist.slug).slice(0, 3);
+        setPaymentStatus('loading');
+        setPaymentError(null);
+
+        try {
+            // 1. Load Razorpay script
+            const loaded = await loadRazorpayScript();
+            if (!loaded) {
+                throw new Error('Failed to load Razorpay SDK. Check your internet connection.');
+            }
+
+            // 2. Create order on backend (amount calculated server-side)
+            const bookingPayload = {
+                djId: artist.id || artist.slug,
+                djName: artist.name,
+                userId: user.uid || user._id || user.id,
+                userName: user.name || user.displayName || 'User',
+                targetDate: bookingForm.date ? bookingForm.date.toISOString() : '',
+                hours: numericDuration,
+                venueLocation: bookingForm.location,
+            };
+
+            const { order } = await createOrder(bookingPayload);
+
+            // 3. Open Razorpay checkout
+            const razorpay = new window.Razorpay({
+                key: RAZORPAY_KEY,
+                amount: order.amount,
+                currency: order.currency,
+                name: 'DJ Night',
+                description: `Booking: ${artist.name} — ${numericDuration}hr`,
+                order_id: order.id,
+                handler: async (response: RazorpayPaymentResponse) => {
+                    try {
+                        // 4. Verify payment on backend
+                        const result = await verifyPayment({
+                            ...bookingPayload,
+                            razorpay_order_id: response.razorpay_order_id,
+                            razorpay_payment_id: response.razorpay_payment_id,
+                            razorpay_signature: response.razorpay_signature,
+                        });
+
+                        if (result.success) {
+                            setPaymentStatus('success');
+                            setShowSuccessToast(true);
+
+                            // Auto-redirect to dashboard after 2 seconds
+                            setTimeout(() => {
+                                navigate('/dashboard/user');
+                            }, 2000);
+                        } else {
+                            setPaymentStatus('failed');
+                            setPaymentError(result.message || 'Payment verification failed.');
+                        }
+                    } catch (err: any) {
+                        setPaymentStatus('failed');
+                        setPaymentError(err.response?.data?.message || 'Payment verification failed.');
+                    }
+                },
+                prefill: {
+                    name: user.name || user.displayName || '',
+                    email: user.email || '',
+                    contact: user.phone || '',
+                },
+                theme: {
+                    color: '#ffffff',
+                },
+                modal: {
+                    ondismiss: () => {
+                        setPaymentStatus('idle');
+                    },
+                },
+            });
+
+            razorpay.on('payment.failed', (response: any) => {
+                setPaymentStatus('failed');
+                setPaymentError(response?.error?.description || 'Payment failed. Please try again.');
+            });
+
+            razorpay.open();
+        } catch (err: any) {
+            setPaymentStatus('failed');
+            setPaymentError(err.response?.data?.message || err.message || 'Something went wrong.');
+        }
+    };
 
     return (
         <div className="w-full">
-
             {/* Left System Info Bar */}
             <div className="fixed left-0 top-0 bottom-0 w-16 md:w-20 border-r border-white/10 z-40 bg-background-dark hidden lg:flex flex-col items-center justify-between py-8">
                 <div className="rotate-90 origin-center whitespace-nowrap text-[10px] font-mono tracking-widest text-gray-500 uppercase flex items-center gap-2">
@@ -73,8 +221,6 @@ const ArtistProfile: React.FC = () => {
             </div>
 
             <div className="relative z-10 flex flex-col min-h-screen w-full lg:pl-20">
-
-
                 <div className="flex-grow pt-0">
                     {/* Hero Section */}
                     <section className="relative w-full h-[85vh] border-b border-white/10 overflow-hidden group">
@@ -84,7 +230,7 @@ const ArtistProfile: React.FC = () => {
                                 animate={{ scale: 1 }}
                                 transition={{ duration: 10, ease: "easeOut" }}
                                 className="absolute inset-0 bg-cover bg-center bg-no-repeat grayscale contrast-125 brightness-75"
-                                style={{ backgroundImage: `url("${artist.imageUrl}")` }}
+                                style={{ backgroundImage: `url("${resolveImageUrl(artist.imageUrl)}")` }}
                             ></motion.div>
                             <div className="absolute inset-0 blueprint-grid z-10 opacity-30"></div>
                             <div className="absolute inset-0 bg-gradient-to-t from-background-dark via-transparent to-transparent z-10"></div>
@@ -105,7 +251,7 @@ const ArtistProfile: React.FC = () => {
                                         {artist.name}
                                     </h1>
                                     <p className="mt-6 text-base md:text-xl text-gray-300 max-w-2xl font-light font-body leading-relaxed line-clamp-2 md:line-clamp-none">
-                                        {artist.bio}
+                                        {artist.bio || 'Architect of deep, hypnotic landscapes. Delivering high-fidelity sonic experiences for large-scale warehouse events and intimate underground clubs.'}
                                     </p>
                                 </motion.div>
 
@@ -128,7 +274,6 @@ const ArtistProfile: React.FC = () => {
                     </section>
 
                     <div className="grid grid-cols-1 lg:grid-cols-12 min-h-screen">
-
                         {/* Sidebar */}
                         <aside className="lg:col-span-4 border-r border-white/10 bg-[#0a0a0a] p-8 lg:p-12 sticky top-[73px] self-start h-auto lg:h-[calc(100vh-73px)] overflow-y-auto custom-scrollbar">
                             <div className="space-y-12">
@@ -156,13 +301,15 @@ const ArtistProfile: React.FC = () => {
                                             <div className="text-2xl font-display uppercase font-medium text-white group-hover:pl-2 transition-all duration-300">{artist.location}</div>
                                         </div>
                                         <div className="group">
-                                            <span className="block text-[10px] font-mono text-gray-400 mb-1">RATE_TIER</span>
-                                            <div className="text-2xl font-display uppercase font-medium text-white group-hover:pl-2 transition-all duration-300">{artist.rate}</div>
+                                            <span className="block text-[10px] font-mono text-gray-400 mb-1">HOURLY_RATE</span>
+                                            <div className="text-2xl font-display uppercase font-medium text-white group-hover:pl-2 transition-all duration-300">{formatCurrency(RATE_PER_HOUR)}/hr</div>
                                         </div>
-                                        <div className="group">
-                                            <span className="block text-[10px] font-mono text-gray-400 mb-1">NEXT_AVAILABLE</span>
-                                            <div className="text-2xl font-display uppercase font-medium text-white group-hover:pl-2 transition-all duration-300">{artist.nextAvailable}</div>
-                                        </div>
+                                        {artist.nextAvailable && (
+                                            <div className="group">
+                                                <span className="block text-[10px] font-mono text-gray-400 mb-1">NEXT_AVAILABLE</span>
+                                                <div className="text-2xl font-display uppercase font-medium text-white group-hover:pl-2 transition-all duration-300">{artist.nextAvailable}</div>
+                                            </div>
+                                        )}
                                     </div>
                                 </motion.div>
 
@@ -176,40 +323,42 @@ const ArtistProfile: React.FC = () => {
                                 >
                                     <h3 className="font-mono text-xs text-white uppercase tracking-widest mb-6 pb-2 border-b border-white/20">Init Booking Protocol</h3>
 
-                                    {bookingStatus === 'success' && (
+                                    {paymentStatus === 'success' && (
                                         <div className="mb-6 p-4 border border-green-500/30 bg-green-500/10 text-green-400 font-mono text-xs uppercase tracking-widest text-center">
-                                            Signal Transmitted Successfully.
+                                            Payment Verified. Booking Confirmed. Redirecting...
+                                        </div>
+                                    )}
+
+                                    {paymentError && (
+                                        <div className="mb-6 p-4 border border-red-500/30 bg-red-500/10 text-red-400 font-mono text-xs uppercase tracking-widest text-center">
+                                            {paymentError}
                                         </div>
                                     )}
 
                                     <form onSubmit={handleBooking} className="space-y-5">
                                         <div className="space-y-1">
                                             <label className="block text-[10px] font-mono uppercase tracking-widest text-gray-500">Target Date</label>
-                                            <input
-                                                type="date"
-                                                required
-                                                value={bookingDate}
-                                                onChange={(e) => setBookingDate(e.target.value)}
+                                            <DatePicker
+                                                selected={bookingForm.date}
+                                                onChange={(date: Date | null) => setBookingForm(prev => ({ ...prev, date }))}
                                                 className="w-full bg-black/50 border border-white/20 text-white px-4 py-3 font-mono text-sm uppercase focus:outline-none focus:border-white transition-all hover:bg-white/5"
+                                                placeholderText="SELECT DATE..."
+                                                dateFormat="yyyy/MM/dd"
+                                                portalId="root-portal"
+                                                required
+                                                disabled={paymentStatus === 'loading'}
                                             />
                                         </div>
 
                                         <div className="space-y-1">
                                             <label className="block text-[10px] font-mono uppercase tracking-widest text-gray-500">Duration Vector</label>
-                                            <select
-                                                value={duration}
-                                                onChange={(e) => setDuration(e.target.value)}
-                                                className="w-full bg-black/50 border border-white/20 text-white px-4 py-3 font-mono text-sm uppercase focus:outline-none focus:border-white transition-all hover:bg-white/5 appearance-none cursor-pointer"
-                                            >
-                                                <option value="1">1 Hour</option>
-                                                <option value="2">2 Hours</option>
-                                                <option value="3">3 Hours</option>
-                                                <option value="4">4 Hours</option>
-                                                <option value="5">5 Hours</option>
-                                                <option value="6">6 Hours</option>
-                                                <option value="8">8 Hours</option>
-                                                <option value="10">10 Hours</option>
-                                            </select>
+                                            <CustomDropdown
+                                                value={bookingForm.duration}
+                                                onChange={(val) => setBookingForm(prev => ({ ...prev, duration: val }))}
+                                                options={durationOptions}
+                                                className="w-full"
+                                                btnClassName="hover:bg-white/5"
+                                            />
                                         </div>
 
                                         <div className="space-y-1">
@@ -218,29 +367,64 @@ const ArtistProfile: React.FC = () => {
                                                 type="text"
                                                 required
                                                 placeholder="ENTER LOCATION..."
-                                                value={location}
-                                                onChange={(e) => setLocation(e.target.value)}
+                                                value={bookingForm.location}
+                                                onChange={(e) => setBookingForm(prev => ({ ...prev, location: e.target.value }))}
                                                 className="w-full bg-black/50 border border-white/20 text-white px-4 py-3 font-mono text-sm uppercase focus:outline-none focus:border-white transition-all placeholder:text-gray-600 hover:bg-white/5"
+                                                disabled={paymentStatus === 'loading'}
                                             />
+                                        </div>
+
+                                        <div className="pt-4 pb-2 border-t border-white/5">
+                                            <div className="flex justify-between items-end">
+                                                <div>
+                                                    <label className="block text-[10px] font-mono uppercase tracking-widest text-gray-400 mb-1">Total Deployment Cost</label>
+                                                    <div className="text-3xl font-display font-bold text-white tracking-tighter">
+                                                        {formatCurrency(totalAmount)}
+                                                    </div>
+                                                </div>
+                                                <div className="text-[10px] font-mono text-gray-600 text-right">
+                                                    @{formatCurrency(RATE_PER_HOUR)}/HR
+                                                </div>
+                                            </div>
                                         </div>
 
                                         <div className="pt-6 mt-6 border-t border-white/10 flex justify-end">
                                             <button
                                                 type="submit"
-                                                className="bg-white text-black font-display font-bold uppercase tracking-widest px-6 py-3 hover:bg-gray-200 transition-colors text-xs flex items-center gap-2 group"
+                                                disabled={!isDurationValid || paymentStatus === 'loading' || paymentStatus === 'success'}
+                                                className="bg-white text-black font-display font-bold uppercase tracking-widest px-6 py-3 hover:bg-gray-200 disabled:bg-gray-800 disabled:text-gray-500 disabled:cursor-not-allowed transition-all text-xs flex items-center gap-2 group"
                                             >
-                                                {user ? 'Deploy' : 'Log In to Book'}
-                                                <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                                {paymentStatus === 'loading' ? (
+                                                    <>
+                                                        <span className="inline-block size-3 border-2 border-gray-500 border-t-transparent rounded-full animate-spin"></span>
+                                                        Processing...
+                                                    </>
+                                                ) : paymentStatus === 'success' ? (
+                                                    'Confirmed ✓'
+                                                ) : user ? (
+                                                    <>
+                                                        Deploy
+                                                        <span className="material-symbols-outlined text-sm group-hover:translate-x-1 transition-transform">arrow_forward</span>
+                                                    </>
+                                                ) : (
+                                                    'Log In to Book'
+                                                )}
                                             </button>
                                         </div>
                                     </form>
                                 </motion.div>
+
+                                {/* Success Toast */}
+                                {showSuccessToast && (
+                                    <div className="fixed bottom-8 right-8 z-50 bg-green-500 text-black font-display font-bold uppercase tracking-widest px-6 py-4 text-xs animate-bounce shadow-[0_0_30px_rgba(74,222,128,0.5)]">
+                                        ✓ BOOKING CONFIRMED — REDIRECTING TO DASHBOARD
+                                    </div>
+                                )}
                             </div>
                         </aside>
 
                         {/* Main Content */}
                         <div className="lg:col-span-8 bg-background-dark">
-
                             {/* Marquee Header */}
                             <div className="border-b border-white/10 py-6 overflow-hidden bg-black flex relative">
                                 <div className="absolute inset-0 z-10 pointer-events-none drop-shadow-[0_0_15px_rgba(255,255,255,0.1)]"></div>
@@ -267,7 +451,7 @@ const ArtistProfile: React.FC = () => {
                                     className="columns-1 md:columns-2 gap-12 text-sm md:text-base text-gray-300 font-body leading-relaxed text-justify"
                                 >
                                     <p className="mb-6 first-letter:text-6xl first-letter:font-display first-letter:font-bold first-letter:float-left first-letter:mr-3 first-letter:mt-[-10px] first-letter:text-white">
-                                        {artist.bio}
+                                        {artist.bio || 'Emerging from the concrete depths of the industrial sector, this artist has become synonymous with a sound that is both surgically precise and deeply emotional.'}
                                     </p>
                                     <p>
                                         With a background in sound engineering, they approach each performance as a technical challenge, pushing the venue's sound system to its absolute limits. Their tracks have been played by tastemakers worldwide, cementing their status in the modern electronic scene. Every booking brings a relentless energy and a deeply uncompromising vision of dance music.
@@ -314,18 +498,18 @@ const ArtistProfile: React.FC = () => {
                             {/* More Artists Section */}
                             <section className="p-8 md:p-16">
                                 <div className="flex items-start gap-4 mb-12">
-                                    <span className="font-mono text-xs text-gray-500 border border-white/20 px-2 py-1">[003] MORE ARTISTS</span>
+                                    <span className="font-mono text-xs text-gray-500 border border-white/20 px-2 py-1">[003] MORE ARTISTS (BACKEND)</span>
                                 </div>
                                 <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-white/10 border border-white/10">
-                                    {otherArtists.map((other, idx) => (
+                                    {relatedDjs.length > 0 ? relatedDjs.map((other, idx) => (
                                         <Link
-                                            to={`/artist/${other.slug}`}
-                                            key={other.slug}
+                                            to={`/dj/${other.id}`}
+                                            key={other.id}
                                             className="group relative aspect-[3/4] overflow-hidden bg-black block"
                                         >
                                             <div
                                                 className="absolute inset-0 bg-cover bg-center transition-transform duration-700 ease-out group-hover:scale-110 grayscale group-hover:grayscale-0"
-                                                style={{ backgroundImage: `url("${other.imageUrl}")` }}
+                                                style={{ backgroundImage: `url("${resolveImageUrl(other.imageUrl)}")` }}
                                             ></div>
                                             <div className="absolute inset-0 bg-black/50 group-hover:bg-black/20 transition-colors duration-500"></div>
                                             <div className="absolute inset-0 flex flex-col justify-between p-6">
@@ -342,13 +526,17 @@ const ArtistProfile: React.FC = () => {
                                                     <div className="h-0 overflow-hidden group-hover:h-auto transition-all duration-500">
                                                         <p className="text-sm font-mono text-gray-300 pt-2 border-t border-white/20 mt-2">
                                                             {other.genre} / {other.location}<br />
-                                                            Rate: {other.rate}
+                                                            Rate: {formatCurrency(other.hourlyRate)}/hr
                                                         </p>
                                                     </div>
                                                 </div>
                                             </div>
                                         </Link>
-                                    ))}
+                                    )) : (
+                                        <div className="col-span-3 py-10 text-center font-mono text-xs text-gray-500 uppercase">
+                                            No additional active recordings.
+                                        </div>
+                                    )}
                                 </div>
                             </section>
                         </div>

@@ -1,75 +1,109 @@
-# 🎧 DJ Night: Premium Real-Time Booking Ecosystem
+# 🎧 DJ Night: Enterprise-Grade Booking Marketplace
 
-**Orchestrating World-Class Talent with Surgical Precision.**
+**Orchestrating World-Class Talent with Surgical Precision and Real-Time Fluidity.**
 
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![React](https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB)](https://reactjs.org/)
 [![Vite](https://img.shields.io/badge/Vite-646CFF?style=for-the-badge&logo=vite&logoColor=white)](https://vitejs.dev/)
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![Firebase](https://img.shields.io/badge/Firebase-FFCA28?style=for-the-badge&logo=firebase&logoColor=black)](https://firebase.google.com/)
+[![Razorpay](https://img.shields.io/badge/Razorpay-02042B?style=for-the-badge&logo=razorpay&logoColor=white)](https://razorpay.com/)
 
-DJ Night is a high-performance, full-stack orchestration platform designed for premium event booking. It bridges the gap between elite musical talent and high-end event organizers using a low-latency, event-driven architecture and a state-of-the-art user interface.
+DJ Night is a high-performance orchestration platform designed for premium event booking. It bridges the gap between elite musical talent and high-end event organizers using a low-latency, event-driven architecture and a state-of-the-art glassmorphic user interface.
 
 ---
 
-## 🏛️ Ecosystem Architecture
+## 🏛️ System Architecture
 
-The platform follows a **decoupled, event-driven architecture** ensures seamless synchronization and enterprise-grade scalability.
+The platform follows a **decoupled, event-driven architecture** ensuring seamless synchronization and enterprise-grade scalability.
 
 ```mermaid
 graph TD
-    Client[Premium React Frontend] <-->|WebSockets| API[Orchestration Layer / Express.js]
-    API <-->|Firebase Identity| Auth[Identity Provider]
-    API <-->|Admin SDK| DB[(Cloud Firestore)]
+    Client[React 19 Frontend - Vite] <-->|Event Stream| API[Express.js / Node.js Backend]
+    API <-->|Admin SDK| DB[(Google Cloud Firestore)]
+    API <-->|SDK| RP[Razorpay Payment Engine]
+    API <-->|Auth Context| FB[Firebase Auth]
     
-    subgraph Security Citadel
-        RateLimit[Volumetric Protection]
-        RBAC[Cryptographic Access Control]
-        CORS[Origin Validation]
+    subgraph Core Persistence
+        Bookings[Bookings Collection]
+        Slugs[Slug Registry Index]
+        Metadata[Global Stats / BPM]
     end
     
-    API --- SecurityCitadel
+    DB --- CorePersistence
 ```
 
 ---
 
-## ✨ Frontend Brilliance: Modern Glassmorphic UI
+## ✨ Feature Breakdown
 
-The frontend is a **state-of-the-art Single Page Application (SPA)** built for visual excellence and interactive fluidness.
+### 🤵 For Event Organizers (Users)
+- **Visual Discovery**: Browse an elite pool of DJs with rich profile cards.
+- **Surgical Booking Flow**: Select dates and locations with a 5-hour safety buffer validation.
+- **Secure Transactions**: Integrated Razorpay payment engine with server-side validation.
+- **Real-Time Signal Ingress**: Watch booking statuses transition from `payment_pending` to `confirmed` in real-time.
+- **Consumer Protection**: Automatic refunds initiated immediately upon DJ rejection.
 
-- **🎨 Rich Aesthetics**: Implements a curated dark-mode design system with **vibrant gradients**, **glassmorphism**, and **smooth micro-animations**.
-- **🎫 Dynamic Onboarding**: A premium signup experience featuring interactive **Role Assignment** tiles (Music Lover vs. DJ Professional).
-- **🔄 Session Resilience**: Global authentication state managed via **React Context API**, ensuring persistent sessions and protected route integrity.
-- **⚡ Performance First**: Built on **Vite** for sub-second hot module replacement and optimized production builds.
+### 🎧 For DJ Professionals
+- **Signal Ingress Dashboard**: Manage incoming requests with a 5-hour "Safe Zone" time constraint.
+- **Atomic Profile Config**: Unified system for managing Genre, Rates, Bio, and unique Slugs.
+- **Global BPM Signature**: Every DJ receives a unique, sequence-safe BPM identifier (starting at 141) via atomic transactions.
+- **Intelligence Dashboard**: Real-time analytics tracking Total Revenue and Confirmed Bookings.
+- **Slug Management**: Claim and update unique URL slugs (e.g., `/dj/techno-king`) with automated registry cleanup.
 
 ---
 
-## ⚙️ Backend Excellence: High-Performance Engine
+## 🔄 Business Logic & State Machines
 
-The backend is a **robust, type-safe API engine** designed for reliability and cryptographic security.
+### 🎫 Booking Lifecycle
+The system employs a sophisticated 3-stage payment and acceptance flow:
 
-- **📡 Real-Time Orchestration**: Leverages **WebSockets (Socket.io)** for instantaneous booking state transitions and bidirectional data flow.
-- **🛡️ Multi-Layered Security**:
-    - **Identity Toolkit Integration**: Direct integration with Firebase Identity for secure, password-less and credential-based authentication.
-    - **RBAC Citadel**: Strict Role-Based Access Control enforcing granular permissions (User, DJ, Admin).
-    - **Volumetric Limiting**: Intelligent rate limiting categorized by global traffic and sensitive authentication vectors.
-- **📊 Business Intelligence**: Integrated **Analytics Pipeline** providing DJs with real-time revenue metrics and booking conversion insights.
-- **💡 Standardized Communication**: Employs a **Unified Response Utility** for consistent, predictable API behavior across all endpoints.
+```mermaid
+stateDiagram-v2
+    [*] --> PaymentPending: User creates order
+    PaymentPending --> PaidPending: Payment Verified
+    PaidPending --> Confirmed: DJ Accepts (Before 5h limit)
+    PaidPending --> Cancelled: DJ Rejects (Auto-Refund)
+    PaidPending --> Expired: Late response (< 5h)
+    Confirmed --> Completed: Event finished
+```
+
+### 💸 Payment & Refund Flow
+We prioritize financial integrity by never trusting frontend values.
+1. **Server-Side Pricing**: Rates are fetched from Firestore and recalculated on the backend before creating a Razorpay order.
+2. **Escrow-like Logic**: Payments are verified via cryptographic signatures before a booking is moved to the "Pending" state for DJ review.
+3. **Automated Reversals**: If a DJ rejects a booking, a backend-initiated `razorpay.payments.refund` call is triggered instantly.
+
+---
+
+## 🏗️ Technical Implementation
+
+### Core Persistance Layers (Firestore NoSQL)
+- **`bookings/`**: The primary transaction record containing `paymentId`, `orderId`, and current `status`.
+- **`slugs/`**: A unique registry index for constant-time (O(1)) lookups of custom DJ URLs.
+- **`metadata/dj_stats`**: A high-consistency document used for atomic incrementing of global BPM signatures.
+
+### Security Controls
+- **RBAC (Role-Based Access Control)**: Custom middleware ensuring DJs cannot access user data and vice-versa.
+- **Transaction Safety**: `db.runTransaction` utilized for profile creation to prevent race conditions during concurrent sign-ups.
+- **Input Sanitization**: Client-side slugification and backend regex validation for all persistent fields.
 
 ---
 
 ## 🛠️ Technology Stack
 
-| Layer | Technologies |
-| :--- | :--- |
-| **Frontend** | React 19, TypeScript, Vite, React Router, Axios, Lucide Icons |
-| **Backend** | Node.js (ESM), Express.js, Firebase Admin SDK, Socket.io |
-| **Database** | Google Cloud Firestore (NoSQL) |
-| **Security** | JWT, Express-Rate-Limit, CORS, Firebase Auth |
+| Layer | Technologies | Why? |
+| :--- | :--- | :--- |
+| **Frontend** | React 19, Vite, TypeScript | Modern, type-safe, sub-second HMR. |
+| **Styling** | Vanilla CSS + Tailwind | Premium glassmorphism and motion control. |
+| **Backend** | Node.js (ESM), Express 5 | Ultra-fast execution with modern JS features. |
+| **Database** | Google Cloud Firestore | NoSQL flexibility with real-time snapshot support. |
+| **Payments** | Razorpay SDK | The gold standard for localized payment orchestration. |
+| **Auth** | Firebase Identity | Secure, scalable identity management. |
 
 ---
 
-## 🚀 Rapid Deployment
+## 🚀 Deployment & Installation
 
 ### 1. Build & Setup
 ```bash
@@ -85,6 +119,8 @@ Configure the `.env` in the `backend/` directory:
 ```env
 PORT=5000
 FIREBASE_API_KEY=your_web_api_key
+RAZORPAY_KEY_ID=your_id
+RAZORPAY_KEY_SECRET=your_secret
 ```
 
 ### 3. Execution Engines
@@ -93,17 +129,11 @@ FIREBASE_API_KEY=your_web_api_key
 
 ---
 
-## 📡 API Technical Reference
-
-| Domain | Protocol | Endpoint | Description |
-| :--- | :---: | :--- | :--- |
-| **Identity** | REST | `/api/auth/*` | Cryptographic onboarding and login |
-| **Talent** | REST | `/api/djs/*` | Discover and filter the global DJ pool |
-| **Transactions** | REST/WS | `/api/bookings/*` | Asynchronous booking lifecycle management |
-| **Intelligence** | REST | `/api/admin/*` | System orchestration and analytics |
+## 📜 Roadmap & Scalability
+- **Elastic Search**: Migrating DJ discovery to Algolia for advanced filtering.
+- **Push Notifications**: Integrating FCM for mobile-native alerts.
+- **Global Expansion**: Multi-currency support via Razorpay Global.
 
 ---
-
-## 📜 Professional Standard
 
 Distributed under the **ISC License**. Designed for the global music community with a focus on **Visual Design, Real-Time Performance, and Security.**
